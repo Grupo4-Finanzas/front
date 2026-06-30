@@ -1,0 +1,34 @@
+{
+  "summary": {
+    "tcea": 12.5,
+    "van": 4250,
+    "monthlyPayment": 485.5,
+    "termMonths": 48
+  },
+  "simulations": [
+    {
+      "id": 1,
+      "date": "15 May 2024",
+      "vehiclePrice": 24500,
+      "tcea": 12.5
+    },
+    {
+      "id": 2,
+      "date": "02 May 2024",
+      "vehiclePrice": 18900,
+      "tcea": 11.8
+    },
+    {
+      "id": 3,
+      "date": "28 Abr 2024",
+      "vehiclePrice": 32000,
+      "tcea": 13.2
+    }
+  ],
+  "recommendedVehicle": {
+    "name": "Model S Pro",
+    "price": 28400,
+    "description": "Basado en tu perfil de crédito y última búsqueda.",
+    "imageUrl": "https://lh3.googleusercontent.com/aida-public/AB6AXuDVLST27ByZYu_7cypQpBBlz_yn4LgWBiXQKccL5aOrMLGEaNzI2kaRvfeJnJBb1HUzH2GOW9VkyAaIkbmF2r5ITK2WZIX44SH-EMRGyBGJr2F7PPvtpFEtP9X8kGVUJ6t71PW2z7Pv1yAYXYMi-8Lr7H4Gr4aEG34tVee5_oRMk7Fa7p2UL8305dmV1EkwYmUS9_G1HcXsNuBsebpE8qNEUet3Cl5sFaVZ_x0uhS96JiGRLPzVcKBTvdRwZcn8_98EQIOFQKlHPfI"
+  }
+}
