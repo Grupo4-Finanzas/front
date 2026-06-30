@@ -1,0 +1,188 @@
+<main class="auth-page">
+  <section class="auth-wrapper">
+    <header class="brand-header">
+      <h1>CrediAuto</h1>
+      <p>Tu camino al vehículo propio comienza aquí</p>
+    </header>
+
+    <div class="auth-card">
+      <div class="tabs">
+        <button
+          type="button"
+          class="tab-button"
+          [class.active]="activeTab === 'login'"
+          (click)="switchTab('login')"
+        >
+          Ingresar
+        </button>
+
+        <button
+          type="button"
+          class="tab-button"
+          [class.active]="activeTab === 'register'"
+          (click)="switchTab('register')"
+        >
+          Registrarse
+        </button>
+      </div>
+
+      @if (errorMessage) {
+        <div class="alert alert-error">
+          {{ errorMessage }}
+        </div>
+      }
+
+      @if (successMessage) {
+        <div class="alert alert-success">
+          {{ successMessage }}
+        </div>
+      }
+
+      @if (activeTab === 'login') {
+        <form class="form" [formGroup]="loginForm" (ngSubmit)="submitLogin()">
+          <div class="form-group">
+            <label for="login-email">Correo electrónico</label>
+
+            <input
+              id="login-email"
+              type="email"
+              formControlName="email"
+              placeholder="ejemplo@correo.com"
+            />
+
+            @if (hasLoginError('email')) {
+              <small>Ingresa un correo válido.</small>
+            }
+          </div>
+
+          <div class="form-group">
+            <div class="label-row">
+              <label for="login-password">Contraseña</label>
+              <a href="#">¿Olvidaste tu contraseña?</a>
+            </div>
+
+            <input
+              id="login-password"
+              type="password"
+              formControlName="password"
+              placeholder="••••••••"
+            />
+
+            @if (hasLoginError('password')) {
+              <small>La contraseña es obligatoria.</small>
+            }
+          </div>
+
+          <button class="primary-button" type="submit">
+            Acceder a mi cuenta
+          </button>
+        </form>
+
+        <div class="divider">
+          <span>O</span>
+        </div>
+
+        <p class="switch-text">
+          ¿Aún no tienes cuenta?
+          <button type="button" (click)="switchTab('register')">
+            Solicitar Crédito
+          </button>
+        </p>
+      }
+
+      @if (activeTab === 'register') {
+        <form class="form" [formGroup]="registerForm" (ngSubmit)="submitRegister()">
+          <div class="form-group">
+            <label for="reg-name">Nombre completo</label>
+
+            <input
+              id="reg-name"
+              type="text"
+              formControlName="fullName"
+              placeholder="Juan Pérez"
+            />
+
+            @if (hasRegisterError('fullName')) {
+              <small>Ingresa tu nombre completo.</small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="reg-email">Correo electrónico</label>
+
+            <input
+              id="reg-email"
+              type="email"
+              formControlName="email"
+              placeholder="ejemplo@correo.com"
+            />
+
+            @if (hasRegisterError('email')) {
+              <small>Ingresa un correo válido.</small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="reg-pass">Contraseña</label>
+
+            <input
+              id="reg-pass"
+              type="password"
+              formControlName="password"
+              placeholder="••••••••"
+            />
+
+            @if (hasRegisterError('password')) {
+              <small>Mínimo 6 caracteres.</small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="reg-confirm-pass">Confirmar contraseña</label>
+
+            <input
+              id="reg-confirm-pass"
+              type="password"
+              formControlName="confirmPassword"
+              placeholder="••••••••"
+            />
+
+            @if (hasRegisterError('confirmPassword')) {
+              <small>Confirma tu contraseña.</small>
+            }
+          </div>
+
+          <div class="checkbox-group">
+            <input
+              id="privacy"
+              type="checkbox"
+              formControlName="acceptedPrivacy"
+            />
+
+            <label for="privacy">
+              Acepto las
+              <a href="#">políticas de privacidad</a>
+              y tratamiento de datos personales.
+            </label>
+          </div>
+
+          @if (hasRegisterError('acceptedPrivacy')) {
+            <small class="checkbox-error">
+              Debes aceptar las políticas de privacidad.
+            </small>
+          }
+
+          <button class="primary-button" type="submit">
+            Crear mi cuenta
+          </button>
+        </form>
+      }
+    </div>
+
+    <footer class="auth-footer">
+      <a href="#">Centro de ayuda</a>
+      <a href="#">Términos</a>
+      <a href="#">Privacidad</a>
+    </footer>
+  </section>
+</main>

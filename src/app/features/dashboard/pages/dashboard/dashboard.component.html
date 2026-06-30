@@ -1,0 +1,176 @@
+<header class="app-header">
+  <div class="header-content">
+    <div class="brand">CrediAuto</div>
+
+    <nav class="desktop-nav">
+      <a class="active" routerLink="/dashboard">Dashboard</a>
+      <a href="#">Simulación</a>
+      <a href="#">Historial</a>
+      <a href="#">Ayuda</a>
+    </nav>
+
+    <button class="profile-button" type="button">
+      <span class="material-symbols-outlined">account_circle</span>
+    </button>
+  </div>
+</header>
+
+<main class="dashboard-page">
+  @if (isLoading) {
+    <section class="state-card">
+      Cargando dashboard...
+    </section>
+  }
+
+  @if (errorMessage) {
+    <section class="state-card error">
+      {{ errorMessage }}
+    </section>
+  }
+
+  @if (!isLoading && dashboard && user) {
+    <section class="welcome-section">
+      <div>
+        <p class="eyebrow">Bienvenido de vuelta</p>
+        <h1>Hola, {{ user.firstName }}</h1>
+      </div>
+
+      <button class="new-simulation-button" type="button">
+        <span class="material-symbols-outlined">calculate</span>
+        Nueva Simulación
+      </button>
+    </section>
+
+    <section class="summary-section">
+      <h2>Resumen de última simulación</h2>
+
+      <div class="summary-grid">
+        <article class="summary-card">
+          <span class="summary-label">TCEA</span>
+
+          <div>
+            <strong class="summary-value primary">
+              {{ dashboard.summary.tcea | number:'1.1-1' }}%
+            </strong>
+
+            <p>Tasa de Costo Efectivo Anual</p>
+          </div>
+        </article>
+
+        <article class="summary-card highlighted">
+          <span class="summary-label">VAN</span>
+
+          <div>
+            <strong class="summary-value">
+              {{ dashboard.summary.van | currency:'USD':'symbol':'1.0-0' }}
+            </strong>
+
+            <p>Valor Actual Neto proyectado</p>
+          </div>
+        </article>
+
+        <article class="summary-card filled">
+          <span class="summary-label">Pago Mensual</span>
+
+          <div>
+            <strong class="summary-value">
+              {{ dashboard.summary.monthlyPayment | currency:'USD':'symbol':'1.2-2' }}
+            </strong>
+
+            <p>Cuota fija estimada a {{ dashboard.summary.termMonths }} meses</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-grid">
+      <article class="history-card">
+        <div class="card-header">
+          <h2>Historial de Simulaciones</h2>
+          <button type="button">Ver todo</button>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Precio Vehículo</th>
+              <th>TCEA</th>
+              <th class="right">Acción</th>
+            </tr>
+            </thead>
+
+            <tbody>
+              @for (simulation of dashboard.simulations; track simulation.id) {
+                <tr>
+                  <td>{{ simulation.date }}</td>
+                  <td>
+                    {{ simulation.vehiclePrice | currency:'USD':'symbol':'1.2-2' }}
+                  </td>
+                  <td class="primary-cell">
+                    {{ simulation.tcea | number:'1.1-1' }}%
+                  </td>
+                  <td class="right">
+                    <button class="link-button" type="button">
+                      Ver detalles
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <aside class="side-column">
+        <article class="vehicle-card">
+          <h3>Vehículo Recomendado</h3>
+
+          <p>
+            {{ dashboard.recommendedVehicle.description }}
+          </p>
+
+          <img
+            [src]="dashboard.recommendedVehicle.imageUrl"
+            [alt]="dashboard.recommendedVehicle.name"
+          />
+
+          <div class="vehicle-info">
+            <strong>{{ dashboard.recommendedVehicle.name }}</strong>
+
+            <span>
+              {{ dashboard.recommendedVehicle.price | currency:'USD':'symbol':'1.0-0' }}
+            </span>
+          </div>
+
+          <button type="button">
+            Ver Financiamiento
+          </button>
+        </article>
+      </aside>
+    </section>
+  }
+</main>
+
+<nav class="mobile-nav">
+  <button class="active" type="button">
+    <span class="material-symbols-outlined">dashboard</span>
+    <span>Dashboard</span>
+  </button>
+
+  <button type="button">
+    <span class="material-symbols-outlined">calculate</span>
+    <span>Simulación</span>
+  </button>
+
+  <button type="button">
+    <span class="material-symbols-outlined">history</span>
+    <span>Historial</span>
+  </button>
+
+  <button type="button">
+    <span class="material-symbols-outlined">person</span>
+    <span>Perfil</span>
+  </button>
+</nav>
