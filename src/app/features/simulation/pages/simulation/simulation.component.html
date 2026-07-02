@@ -1,0 +1,433 @@
+<header class="app-header">
+  <div class="header-content">
+    <div class="brand">CrediAuto</div>
+
+    <nav class="desktop-nav">
+      <a routerLink="/dashboard">Dashboard</a>
+      <a class="active" routerLink="/simulation">Simulación</a>
+      <a href="#">Historial</a>
+      <a href="#">Ayuda</a>
+    </nav>
+
+    <button class="profile-button" type="button">
+      <span class="material-symbols-outlined">account_circle</span>
+    </button>
+  </div>
+</header>
+
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <h1>CrediAuto</h1>
+    <p>Simulador de Crédito</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a routerLink="/dashboard">
+      <span class="material-symbols-outlined">dashboard</span>
+      Dashboard
+    </a>
+
+    <a class="active" routerLink="/simulation">
+      <span class="material-symbols-outlined">calculate</span>
+      Simulación
+    </a>
+
+    <a href="#">
+      <span class="material-symbols-outlined">history</span>
+      Historial
+    </a>
+
+    <a href="#">
+      <span class="material-symbols-outlined">person</span>
+      Perfil
+    </a>
+  </nav>
+</aside>
+
+<main class="simulation-page">
+  <div class="page-content">
+    <header class="page-header">
+      <h2>Nueva Simulación</h2>
+      <p>Configure los parámetros para calcular su plan de financiamiento vehicular.</p>
+    </header>
+
+    @if (successMessage) {
+      <div class="alert success">
+        {{ successMessage }}
+      </div>
+    }
+
+    @if (errorMessage) {
+      <div class="alert error">
+        {{ errorMessage }}
+      </div>
+    }
+
+    <form class="simulation-form" [formGroup]="simulationForm" (ngSubmit)="submitSimulation()">
+      <div class="form-grid">
+        <section class="form-card client-card">
+          <div class="section-title">
+            <span class="material-symbols-outlined">person</span>
+            <h3>Datos del Cliente</h3>
+          </div>
+
+          <div class="two-columns">
+            <div class="form-group">
+              <label for="documentNumber">DNI / RUC</label>
+              <input
+                id="documentNumber"
+                type="text"
+                formControlName="documentNumber"
+                placeholder="Ingrese documento"
+              />
+
+              @if (hasError('documentNumber')) {
+                <small>El documento es obligatorio.</small>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="fullName">Nombre Completo</label>
+              <input
+                id="fullName"
+                type="text"
+                formControlName="fullName"
+                placeholder="Juan Pérez"
+              />
+
+              @if (hasError('fullName')) {
+                <small>El nombre completo es obligatorio.</small>
+              }
+            </div>
+          </div>
+        </section>
+
+        <section class="form-card vehicle-card">
+          <div>
+            <div class="section-title">
+              <span class="material-symbols-outlined">directions_car</span>
+              <h3>Vehículo</h3>
+            </div>
+
+            <div class="form-stack">
+              <div class="form-group">
+                <label>Moneda</label>
+
+                <div class="segmented-control">
+                  <button
+                    type="button"
+                    [class.active]="selectedCurrency === 'PEN'"
+                    (click)="setCurrency('PEN')"
+                  >
+                    PEN
+                  </button>
+
+                  <button
+                    type="button"
+                    [class.active]="selectedCurrency === 'USD'"
+                    (click)="setCurrency('USD')"
+                  >
+                    USD
+                  </button>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="vehiclePrice">Precio del Vehículo</label>
+
+                <div class="money-input">
+                  <span>{{ currencySymbol }}</span>
+                  <input
+                    id="vehiclePrice"
+                    type="number"
+                    formControlName="vehiclePrice"
+                    placeholder="0.00"
+                  />
+                </div>
+
+                @if (hasError('vehiclePrice')) {
+                  <small>Ingresa un precio válido.</small>
+                }
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="form-card full-row">
+          <div class="section-title">
+            <span class="material-symbols-outlined">tune</span>
+            <h3>Configuración del Crédito</h3>
+          </div>
+
+          <div class="three-columns">
+            <div class="form-group">
+              <label for="initialFeePercentage">Cuota Inicial (%)</label>
+
+              <input
+                id="initialFeePercentage"
+                type="range"
+                min="10"
+                max="50"
+                formControlName="initialFeePercentage"
+              />
+
+              <div class="range-labels">
+                <span>10%</span>
+                <strong>{{ simulationForm.controls.initialFeePercentage.value }}%</strong>
+                <span>50%</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="balloonFeePercentage">Cuota Balloon (%)</label>
+
+              <select id="balloonFeePercentage" formControlName="balloonFeePercentage">
+                <option [ngValue]="0">0% (Sin Balloon)</option>
+                <option [ngValue]="10">10%</option>
+                <option [ngValue]="20">20%</option>
+                <option [ngValue]="30">30%</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="termMonths">Plazo (Meses)</label>
+
+              <select id="termMonths" formControlName="termMonths">
+                <option [ngValue]="12">12 Meses</option>
+                <option [ngValue]="24">24 Meses</option>
+                <option [ngValue]="36">36 Meses</option>
+                <option [ngValue]="48">48 Meses</option>
+                <option [ngValue]="60">60 Meses</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <section class="form-card half-row">
+          <div class="section-title">
+            <span class="material-symbols-outlined">percent</span>
+            <h3>Tasas de Interés</h3>
+          </div>
+
+          <div class="two-columns">
+            <div class="form-group">
+              <label for="rateType">Tipo de Tasa</label>
+
+              <select id="rateType" formControlName="rateType">
+                <option value="TEA">TEA</option>
+                <option value="TEM">TEM</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="rateValuePercentage">Valor (%)</label>
+
+              <input
+                id="rateValuePercentage"
+                type="number"
+                step="0.01"
+                formControlName="rateValuePercentage"
+                placeholder="12.50"
+              />
+
+              @if (hasError('rateValuePercentage')) {
+                <small>Ingresa una tasa válida.</small>
+              }
+            </div>
+
+            <div class="form-group full-column">
+              <label for="paymentFrequency">Frecuencia de Pago</label>
+
+              <select id="paymentFrequency" formControlName="paymentFrequency">
+                <option value="MONTHLY">Mensual (30 días)</option>
+                <option value="BIMONTHLY">Bimensual (60 días)</option>
+                <option value="QUARTERLY">Trimestral (90 días)</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <section class="form-card half-row">
+          <div class="section-title">
+            <span class="material-symbols-outlined">calendar_today</span>
+            <h3>Periodo de Gracia</h3>
+          </div>
+
+          <div class="form-stack">
+            <div class="form-group">
+              <label>Tipo de Gracia</label>
+
+              <div class="segmented-control three">
+                <button
+                  type="button"
+                  [class.active]="selectedGraceType === 'NONE'"
+                  (click)="setGraceType('NONE')"
+                >
+                  Sin Gracia
+                </button>
+
+                <button
+                  type="button"
+                  [class.active]="selectedGraceType === 'TOTAL'"
+                  (click)="setGraceType('TOTAL')"
+                >
+                  Total
+                </button>
+
+                <button
+                  type="button"
+                  [class.active]="selectedGraceType === 'PARTIAL'"
+                  (click)="setGraceType('PARTIAL')"
+                >
+                  Parcial
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="graceMonths">Meses de Gracia</label>
+
+              <input
+                id="graceMonths"
+                type="number"
+                formControlName="graceMonths"
+                placeholder="0"
+                [readonly]="selectedGraceType === 'NONE'"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section class="form-card full-row">
+          <div class="section-title">
+            <span class="material-symbols-outlined">analytics</span>
+            <h3>Análisis Financiero Proyectado</h3>
+          </div>
+
+          <div class="two-columns">
+            <div class="form-group">
+              <label for="targetTirPercentage">TIR Objetivo (%)</label>
+
+              <input
+                id="targetTirPercentage"
+                type="range"
+                min="0"
+                max="100"
+                formControlName="targetTirPercentage"
+              />
+
+              <div class="range-labels">
+                <span>0%</span>
+                <strong>{{ simulationForm.controls.targetTirPercentage.value }}%</strong>
+                <span>100%</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>VAN Proyectado</label>
+
+              <div class="readonly-box">
+                Pendiente de cálculo
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="form-card full-row">
+          <div class="section-title">
+            <span class="material-symbols-outlined">payments</span>
+            <h3>Costos y Seguros</h3>
+          </div>
+
+          <div class="two-columns">
+            <div class="cost-stack">
+              <div class="cost-item">
+                <div>
+                  <strong>Seguro de Desgravamen</strong>
+                  <span>Tasa mensual aplicada al saldo</span>
+                </div>
+
+                <input
+                  type="number"
+                  step="0.01"
+                  formControlName="lifeInsuranceMonthlyRatePercentage"
+                  placeholder="0.05"
+                />
+              </div>
+
+              <div class="cost-item">
+                <div>
+                  <strong>Gastos Administrativos</strong>
+                  <span>Costo fijo por cuota</span>
+                </div>
+
+                <input
+                  type="number"
+                  step="0.01"
+                  formControlName="administrativeExpenses"
+                  placeholder="10.00"
+                />
+              </div>
+            </div>
+
+            <div class="cost-stack">
+              <div class="cost-item">
+                <div>
+                  <strong>Seguro Vehicular</strong>
+                  <span>Tasa anual sobre valor comercial</span>
+                </div>
+
+                <input
+                  type="number"
+                  step="0.01"
+                  formControlName="vehicleInsuranceAnnualRatePercentage"
+                  placeholder="3.50"
+                />
+              </div>
+
+              <div class="note-box">
+                <div>
+                  <span class="material-symbols-outlined">info</span>
+                  <strong>Nota de Simulación</strong>
+                </div>
+
+                <p>
+                  Los valores ingresados se guardarán para realizar el cálculo financiero en la siguiente etapa.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="action-row">
+        <button class="primary-button" type="submit">
+          <span>Guardar Simulación</span>
+          <span class="material-symbols-outlined">arrow_forward</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</main>
+
+<nav class="mobile-nav">
+  <a routerLink="/dashboard">
+    <span class="material-symbols-outlined">dashboard</span>
+    <span>Home</span>
+  </a>
+
+  <a class="active" routerLink="/simulation">
+    <span class="material-symbols-outlined">calculate</span>
+    <span>Simular</span>
+  </a>
+
+  <a href="#">
+    <span class="material-symbols-outlined">history</span>
+    <span>Historial</span>
+  </a>
+
+  <a href="#">
+    <span class="material-symbols-outlined">person</span>
+    <span>Perfil</span>
+  </a>
+</nav>

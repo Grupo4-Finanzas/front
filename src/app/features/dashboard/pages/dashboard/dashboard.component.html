@@ -4,7 +4,7 @@
 
     <nav class="desktop-nav">
       <a class="active" routerLink="/dashboard">Dashboard</a>
-      <a href="#">Simulación</a>
+      <a routerLink="/simulation">Simulación</a>
       <a href="#">Historial</a>
       <a href="#">Ayuda</a>
     </nav>
@@ -35,7 +35,7 @@
         <h1>Hola, {{ user.firstName }}</h1>
       </div>
 
-      <button class="new-simulation-button" type="button">
+      <button class="new-simulation-button" type="button" routerLink="/simulation">
         <span class="material-symbols-outlined">calculate</span>
         Nueva Simulación
       </button>
