@@ -5,7 +5,7 @@
     <nav class="desktop-nav">
       <a class="active" routerLink="/dashboard">Dashboard</a>
       <a routerLink="/simulation">Simulación</a>
-      <a href="#">Historial</a>
+      <a routerLink="/history">Historial</a>
       <a href="#">Ayuda</a>
     </nav>
 
@@ -32,7 +32,7 @@
     <section class="welcome-section">
       <div>
         <p class="eyebrow">Bienvenido de vuelta</p>
-        <h1>Hola, {{ user.firstName }}</h1>
+        <h1>Hola, {{ userFirstName }}</h1>
       </div>
 
       <button class="new-simulation-button" type="button" routerLink="/simulation">
@@ -87,7 +87,10 @@
       <article class="history-card">
         <div class="card-header">
           <h2>Historial de Simulaciones</h2>
-          <button type="button">Ver todo</button>
+
+          <a class="link-button" routerLink="/history">
+            Ver todo
+          </a>
         </div>
 
         <div class="table-wrapper">
@@ -102,19 +105,35 @@
             </thead>
 
             <tbody>
-              @for (simulation of dashboard.simulations; track simulation.id) {
+              @for (simulation of recentSimulations; track simulation.id) {
                 <tr>
-                  <td>{{ simulation.date }}</td>
                   <td>
-                    {{ simulation.vehiclePrice | currency:'USD':'symbol':'1.2-2' }}
+                    {{ simulation.createdAt | date:'dd MMM yyyy' }}
                   </td>
+
+                  <td>
+                    {{ simulation.vehiclePrice | currency:simulation.currency:'symbol':'1.2-2' }}
+                  </td>
+
                   <td class="primary-cell">
-                    {{ simulation.tcea | number:'1.1-1' }}%
+                    {{ simulation.tceaPercentage | number:'1.2-2' }}%
                   </td>
+
                   <td class="right">
-                    <button class="link-button" type="button">
+                    <a
+                      class="link-button"
+                      [routerLink]="['/simulation-results', simulation.id]"
+                    >
                       Ver detalles
-                    </button>
+                    </a>
+                  </td>
+                </tr>
+              }
+
+              @if (!recentSimulations.length) {
+                <tr>
+                  <td colspan="4" class="empty-table-message">
+                    Aún no hay simulaciones calculadas.
                   </td>
                 </tr>
               }
@@ -154,17 +173,17 @@
 </main>
 
 <nav class="mobile-nav">
-  <button class="active" type="button">
+  <button class="active" type="button" routerLink="/dashboard">
     <span class="material-symbols-outlined">dashboard</span>
     <span>Dashboard</span>
   </button>
 
-  <button type="button">
+  <button type="button" routerLink="/simulation">
     <span class="material-symbols-outlined">calculate</span>
     <span>Simulación</span>
   </button>
 
-  <button type="button">
+  <button type="button" routerLink="/history">
     <span class="material-symbols-outlined">history</span>
     <span>Historial</span>
   </button>

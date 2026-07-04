@@ -1,0 +1,256 @@
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <span>CrediAuto</span>
+    <small>Simulador de Crédito</small>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a routerLink="/dashboard">
+      <span class="material-symbols-outlined">dashboard</span>
+      Dashboard
+    </a>
+
+    <a routerLink="/simulation">
+      <span class="material-symbols-outlined">calculate</span>
+      Simulación
+    </a>
+
+    <a class="active" routerLink="/history">
+      <span class="material-symbols-outlined">history</span>
+      Historial
+    </a>
+
+    <a href="#">
+      <span class="material-symbols-outlined">person</span>
+      Perfil
+    </a>
+  </nav>
+</aside>
+
+<header class="mobile-header">
+  <span>CrediAuto</span>
+
+  <button type="button">
+    <span class="material-symbols-outlined">account_circle</span>
+  </button>
+</header>
+
+<main class="history-page">
+  <div class="page-content">
+    <header class="page-header">
+      <div>
+        <h1>Historial de Simulaciones</h1>
+        <p>Gestiona y revisa tus cálculos de crédito vehicular guardados.</p>
+      </div>
+
+      <a class="new-simulation-link" routerLink="/simulation">
+        <span class="material-symbols-outlined">add</span>
+        Nueva Simulación
+      </a>
+    </header>
+
+    <form class="filters-card" [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+      <div class="search-field">
+        <span class="material-symbols-outlined">search</span>
+
+        <input
+          type="text"
+          formControlName="search"
+          placeholder="Buscar por precio, TCEA, cuota o referencia..."
+        />
+      </div>
+
+      <div class="filter-row">
+        <select formControlName="dateRange">
+          <option value="LAST_30_DAYS">Últimos 30 días</option>
+          <option value="LAST_3_MONTHS">Últimos 3 meses</option>
+          <option value="THIS_YEAR">Este año</option>
+          <option value="ALL_TIME">Todo el tiempo</option>
+        </select>
+
+        <select formControlName="status">
+          <option value="ALL">Todos los estados</option>
+          <option value="CALCULATED">Calculados</option>
+          <option value="SAVED">Guardados</option>
+          <option value="EXPIRED">Expirados</option>
+        </select>
+
+        <button type="submit" class="filter-button">
+          <span class="material-symbols-outlined">filter_list</span>
+          Filtrar
+        </button>
+
+        <button type="button" class="clear-button" (click)="clearFilters()">
+          Limpiar
+        </button>
+      </div>
+    </form>
+
+    <section class="table-card">
+      <div class="table-wrapper">
+        <table>
+          <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Precio Vehículo</th>
+            <th>TCEA</th>
+            <th>Cuota Mensual</th>
+            <th>Plazo</th>
+            <th>Estado</th>
+            <th class="right">Acciones</th>
+          </tr>
+          </thead>
+
+          <tbody>
+            @for (item of paginatedItems; track item.id) {
+              <tr>
+                <td>
+                  {{ item.createdAt | date:'dd MMM, yyyy' }}
+                </td>
+
+                <td>
+                  <div class="price-cell">
+                    <strong>
+                      {{ item.vehiclePrice | currency:item.currency:'symbol':'1.2-2' }}
+                    </strong>
+
+                    <span>ID: #{{ item.id }}</span>
+                  </div>
+                </td>
+
+                <td>
+                  {{ item.tceaPercentage | number:'1.2-2' }}%
+                </td>
+
+                <td>
+                  {{ item.monthlyPayment | currency:item.currency:'symbol':'1.2-2' }}
+                </td>
+
+                <td>
+                  {{ item.termMonths }} meses
+                </td>
+
+                <td>
+                  <span class="status-pill" [class]="getStatusClass(item.status)">
+                    {{ getStatusLabel(item.status) }}
+                  </span>
+                </td>
+
+                <td class="right">
+                  <div class="actions">
+                    <a
+                      [routerLink]="['/simulation-results', item.id]"
+                      title="Ver detalle"
+                    >
+                      <span class="material-symbols-outlined">visibility</span>
+                    </a>
+
+                    <button
+                      type="button"
+                      title="Eliminar"
+                      (click)="deleteSimulation(item.id)"
+                    >
+                      <span class="material-symbols-outlined">delete</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+
+            @if (!paginatedItems.length) {
+              <tr>
+                <td colspan="7" class="empty-cell">
+                  Aún no hay simulaciones que coincidan con los filtros.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <footer class="table-footer">
+        <span>
+          Mostrando {{ showingFrom }}-{{ showingTo }} de {{ filteredItems.length }} simulaciones
+        </span>
+
+        <div class="pagination">
+          <button
+            type="button"
+            [disabled]="currentPage === 1"
+            (click)="previousPage()"
+          >
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+
+          <span>Página {{ currentPage }} de {{ totalPages }}</span>
+
+          <button
+            type="button"
+            [disabled]="currentPage === totalPages"
+            (click)="nextPage()"
+          >
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
+        </div>
+      </footer>
+    </section>
+
+    <section class="insight-grid">
+      <article class="cta-card">
+        <h2>¿Listo para una nueva comparación?</h2>
+
+        @if (latestSimulation) {
+          <p>
+            Tu simulación más reciente fue por
+            {{ latestSimulation.vehiclePrice | currency:latestSimulation.currency:'symbol':'1.2-2' }}
+            con una TCEA de {{ latestSimulation.tceaPercentage | number:'1.2-2' }}%.
+          </p>
+        } @else {
+          <p>
+            Crea una simulación para comparar cuotas, tasas y costos financieros.
+          </p>
+        }
+
+        <a routerLink="/simulation">
+          Nueva Simulación
+        </a>
+      </article>
+
+      <article class="summary-card">
+        <div class="summary-icon">
+          <span class="material-symbols-outlined">insights</span>
+        </div>
+
+        <h3>Resumen del Mes</h3>
+
+        <p>
+          Has realizado {{ monthlyCount }} simulación(es) este mes.
+          La TCEA promedio de tus simulaciones es
+          {{ averageTcea | number:'1.2-2' }}%.
+        </p>
+      </article>
+    </section>
+  </div>
+</main>
+
+<nav class="mobile-nav">
+  <a routerLink="/dashboard">
+    <span class="material-symbols-outlined">dashboard</span>
+    <span>Inicio</span>
+  </a>
+
+  <a routerLink="/simulation">
+    <span class="material-symbols-outlined">calculate</span>
+    <span>Simular</span>
+  </a>
+
+  <a class="active" routerLink="/history">
+    <span class="material-symbols-outlined">history</span>
+    <span>Historial</span>
+  </a>
+
+  <a href="#">
+    <span class="material-symbols-outlined">person</span>
+    <span>Perfil</span>
+  </a>
+</nav>

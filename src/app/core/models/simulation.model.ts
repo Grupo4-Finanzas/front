@@ -4,6 +4,7 @@ export type GraceType = 'NONE' | 'TOTAL' | 'PARTIAL';
 export type PaymentFrequency = 'MONTHLY' | 'BIMONTHLY' | 'QUARTERLY';
 export type SimulationViability = 'VIABLE' | 'NOT_VIABLE';
 export type PaymentStatus = 'COMPLETED' | 'NEXT' | 'PENDING';
+export type SimulationHistoryStatus = 'CALCULATED' | 'SAVED' | 'EXPIRED';
 
 export interface SimulationRequest {
   id: number;
@@ -121,4 +122,15 @@ export interface PaymentScheduleRow {
   totalPayment: number;
   finalBalance: number;
   status: PaymentStatus;
+}
+
+export interface SimulationHistoryItem {
+  id: number;
+  createdAt: string;
+  vehiclePrice: number;
+  currency: CurrencyCode;
+  tceaPercentage: number;
+  monthlyPayment: number;
+  termMonths: number;
+  status: SimulationHistoryStatus;
 }

@@ -5,6 +5,7 @@ import { catchError, map, Observable, of } from 'rxjs';
 import {
   SimulationCalculationResponse,
   SimulationDraft,
+  SimulationHistoryItem,
   SimulationRequest
 } from '../models/simulation.model';
 
@@ -232,5 +233,51 @@ export class SimulationService {
     }
 
     return 'PENDING' as const;
+  }
+
+  getCalculationResults(): Observable<SimulationCalculationResponse[]> {
+    return of(this.getLocalCalculationResults());
+  }
+
+  getSimulationHistory(): Observable<SimulationHistoryItem[]> {
+    const history = this.getLocalCalculationResults()
+      .map(result => this.mapCalculationToHistoryItem(result))
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+    return of(history);
+  }
+
+  deleteCalculationResult(id: number): Observable<void> {
+    const updatedResults = this.getLocalCalculationResults().filter(
+      result => result.id !== id
+    );
+
+    localStorage.setItem(
+      this.resultsStorageKey,
+      JSON.stringify(updatedResults)
+    );
+
+    const latestId = Number(localStorage.getItem(this.latestResultIdKey));
+
+    if (latestId === id) {
+      localStorage.removeItem(this.latestResultIdKey);
+    }
+
+    return of(void 0);
+  }
+
+  private mapCalculationToHistoryItem(
+    result: SimulationCalculationResponse
+  ): SimulationHistoryItem {
+    return {
+      id: result.id,
+      createdAt: result.createdAt,
+      vehiclePrice: result.input.vehicle.vehiclePrice,
+      currency: result.results.currency,
+      tceaPercentage: result.results.tceaPercentage,
+      monthlyPayment: result.results.monthlyPayment,
+      termMonths: result.results.termMonths,
+      status: 'CALCULATED'
+    };
   }
 }
