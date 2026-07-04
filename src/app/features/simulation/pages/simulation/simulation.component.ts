@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 import {
   CurrencyCode,
@@ -20,6 +20,7 @@ import { SimulationService } from '../../../../core/services/simulation.service'
 export class SimulationComponent {
   private readonly fb = inject(FormBuilder);
   private readonly simulationService = inject(SimulationService);
+  private readonly router = inject(Router);
 
   successMessage = '';
   errorMessage = '';
@@ -67,7 +68,7 @@ export class SimulationComponent {
 
     if (this.simulationForm.invalid) {
       this.simulationForm.markAllAsTouched();
-      this.errorMessage = 'Completa los campos obligatorios antes de guardar la simulación.';
+      this.errorMessage = 'Completa los campos obligatorios antes de calcular la simulación.';
       return;
     }
 
@@ -106,13 +107,12 @@ export class SimulationComponent {
       }
     };
 
-    this.simulationService.saveSimulation(draft).subscribe({
-      next: savedSimulation => {
-        this.successMessage = `Simulación guardada correctamente. ID: ${savedSimulation.id}`;
-        this.simulationForm.markAsPristine();
+    this.simulationService.calculateSimulation(draft).subscribe({
+      next: response => {
+        this.router.navigateByUrl(`/simulation-results/${response.id}`);
       },
       error: () => {
-        this.errorMessage = 'No se pudo guardar la simulación.';
+        this.errorMessage = 'No se pudo calcular la simulación.';
       }
     });
   }
