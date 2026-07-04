@@ -1,0 +1,298 @@
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <h1>CrediAuto</h1>
+    <p>Simulador de Crédito</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a routerLink="/dashboard">
+      <span class="material-symbols-outlined">dashboard</span>
+      Dashboard
+    </a>
+
+    <a class="active" routerLink="/simulation">
+      <span class="material-symbols-outlined">calculate</span>
+      Simulación
+    </a>
+
+    <a href="#">
+      <span class="material-symbols-outlined">history</span>
+      Historial
+    </a>
+
+    <a href="#">
+      <span class="material-symbols-outlined">person</span>
+      Perfil
+    </a>
+  </nav>
+</aside>
+
+<main class="results-page">
+  @if (isLoading) {
+    <section class="state-card">
+      Cargando resultados...
+    </section>
+  }
+
+  @if (errorMessage) {
+    <section class="state-card error">
+      <p>{{ errorMessage }}</p>
+
+      <a routerLink="/simulation">
+        Volver a Simulación
+      </a>
+    </section>
+  }
+
+  @if (!isLoading && calculation) {
+    <header class="results-header">
+      <div>
+        <h1>Resumen de Resultados</h1>
+        <p>
+          Análisis detallado de viabilidad financiera calculado según los parámetros de la simulación.
+        </p>
+      </div>
+
+      <div class="header-actions">
+        <button type="button" class="secondary-button">
+          Descargar PDF
+        </button>
+
+        <a routerLink="/simulation" class="primary-link">
+          Nueva Simulación
+        </a>
+      </div>
+    </header>
+
+    <section class="bento-grid">
+      <article class="main-result-card">
+        <p class="eyebrow">Cuota Mensual Estimada</p>
+
+        <div class="monthly-payment">
+          <span>
+            {{ calculation.results.monthlyPayment | currency:currencyCode:'symbol':'1.2-2' }}
+          </span>
+
+          <strong>
+            {{ calculation.results.currency }}
+          </strong>
+        </div>
+
+        <p class="description">
+          {{ calculation.results.includedCostsDescription }}
+        </p>
+
+        <div class="mini-metrics">
+          <div>
+            <p>Capital Inicial</p>
+            <strong>
+              {{ calculation.results.initialCapital | currency:currencyCode:'symbol':'1.2-2' }}
+            </strong>
+          </div>
+
+          <div>
+            <p>Plazo Total</p>
+            <strong>{{ calculation.results.termMonths }} Meses</strong>
+          </div>
+
+          <div>
+            <p>Tasa Efectiva</p>
+            <strong>
+              {{ calculation.results.effectiveRatePercentage | number:'1.2-2' }}%
+            </strong>
+          </div>
+        </div>
+      </article>
+
+      <section class="metrics-column">
+        <article class="metric-card">
+          <div class="metric-header">
+            <p>TCEA</p>
+            <span class="material-symbols-outlined">info</span>
+          </div>
+
+          <strong>
+            {{ calculation.results.tceaPercentage | number:'1.2-2' }}%
+          </strong>
+
+          <small>Tasa de Costo Efectivo Anual</small>
+        </article>
+
+        <article class="metric-card viability">
+          <div class="metric-header">
+            <p>VAN</p>
+            <span class="tag">
+              {{ viabilityLabel }}
+            </span>
+          </div>
+
+          <strong>
+            {{ calculation.results.van | currency:currencyCode:'symbol':'1.2-2' }}
+          </strong>
+
+          <small>Valor Actual Neto proyectado</small>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-header">
+            <p>TIR</p>
+            <span class="material-symbols-outlined">trending_up</span>
+          </div>
+
+          <strong>
+            {{ calculation.results.tirPercentage | number:'1.2-2' }}%
+          </strong>
+
+          <small>Tasa Interna de Retorno</small>
+
+          <a routerLink="/simulation" class="adjust-link">
+            <span class="material-symbols-outlined">tune</span>
+            Ajustar TIR
+          </a>
+        </article>
+      </section>
+
+      <article class="chart-card">
+        <h3>Interés vs. Amortización</h3>
+
+        <div class="bar-chart">
+          @for (item of calculation.results.interestAmortizationChart; track item.period) {
+            <div class="bar-group">
+              <div
+                class="bar interest"
+                [style.height.%]="item.interestPercentage"
+              ></div>
+
+              <div
+                class="bar capital"
+                [style.height.%]="item.capitalPercentage"
+              ></div>
+            </div>
+          }
+        </div>
+
+        <div class="chart-footer">
+          <span>Inicio</span>
+
+          <div class="legend">
+            <span>
+              <i class="legend-interest"></i>
+              Interés
+            </span>
+
+            <span>
+              <i class="legend-capital"></i>
+              Capital
+            </span>
+          </div>
+
+          <span>Fin</span>
+        </div>
+      </article>
+
+      <article class="chart-card">
+        <h3>Evolución de Saldo Pendiente</h3>
+
+        <div class="balance-card">
+          @for (point of calculation.results.balanceEvolution; track point.period) {
+            <div class="balance-row">
+              <span>Mes {{ point.period }}</span>
+
+              <strong>
+                {{ point.balance | currency:currencyCode:'symbol':'1.2-2' }}
+              </strong>
+            </div>
+          }
+        </div>
+
+        <div class="chart-footer">
+          <span>
+            Saldo Inicial:
+            {{ calculation.results.initialCapital | currency:currencyCode:'symbol':'1.0-0' }}
+          </span>
+
+          <span>Saldo Final: {{ 0 | currency:currencyCode:'symbol':'1.2-2' }}</span>
+        </div>
+      </article>
+
+      <article class="schedule-card">
+        <div class="schedule-header">
+          <h3>Cronograma Resumido</h3>
+
+          <a
+            class="detail-button"
+            [routerLink]="['/simulation-results', calculation.id, 'payment-plan']"
+          >
+            Ver detalle completo
+            <span class="material-symbols-outlined">chevron_right</span>
+          </a>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+            <tr>
+              <th>Periodo</th>
+              <th>Amortización</th>
+              <th>Interés</th>
+              <th>Seguros/Gastos</th>
+              <th>Cuota Total</th>
+              <th class="right">Saldo Final</th>
+            </tr>
+            </thead>
+
+            <tbody>
+              @for (row of summarySchedule; track row.period) {
+                <tr>
+                  <td>Mes {{ row.period }}</td>
+
+                  <td>
+                    {{ row.amortization | currency:currencyCode:'symbol':'1.2-2' }}
+                  </td>
+
+                  <td>
+                    {{ row.interest | currency:currencyCode:'symbol':'1.2-2' }}
+                  </td>
+
+                  <td>
+                    {{ row.costs | currency:currencyCode:'symbol':'1.2-2' }}
+                  </td>
+
+                  <td class="primary-cell">
+                    {{ row.totalPayment | currency:currencyCode:'symbol':'1.2-2' }}
+                  </td>
+
+                  <td class="right">
+                    {{ row.finalBalance | currency:currencyCode:'symbol':'1.2-2' }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+  }
+</main>
+
+<nav class="mobile-nav">
+  <a routerLink="/dashboard">
+    <span class="material-symbols-outlined">dashboard</span>
+    <span>Inicio</span>
+  </a>
+
+  <a class="active" routerLink="/simulation">
+    <span class="material-symbols-outlined">calculate</span>
+    <span>Cálculo</span>
+  </a>
+
+  <a href="#">
+    <span class="material-symbols-outlined">history</span>
+    <span>Historial</span>
+  </a>
+
+  <a href="#">
+    <span class="material-symbols-outlined">person</span>
+    <span>Perfil</span>
+  </a>
+</nav>

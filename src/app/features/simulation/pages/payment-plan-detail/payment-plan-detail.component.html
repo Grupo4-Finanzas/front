@@ -1,0 +1,256 @@
+<header class="app-header">
+  <div class="brand">CrediAuto</div>
+
+  <nav class="desktop-nav">
+    <a routerLink="/dashboard">Dashboard</a>
+    <a class="active" routerLink="/simulation">Simulación</a>
+    <a href="#">Historial</a>
+    <a href="#">Ayuda</a>
+  </nav>
+
+  <button class="profile-button" type="button">
+    <span class="material-symbols-outlined">account_circle</span>
+  </button>
+</header>
+
+<aside class="sidebar">
+  <nav class="sidebar-nav">
+    <a routerLink="/dashboard">
+      <span class="material-symbols-outlined">dashboard</span>
+      Dashboard
+    </a>
+
+    <a class="active" routerLink="/simulation">
+      <span class="material-symbols-outlined">calculate</span>
+      Simulación
+    </a>
+
+    <a href="#">
+      <span class="material-symbols-outlined">history</span>
+      Historial
+    </a>
+
+    <a href="#">
+      <span class="material-symbols-outlined">person</span>
+      Perfil
+    </a>
+  </nav>
+</aside>
+
+<main class="payment-plan-page">
+  @if (isLoading) {
+    <section class="state-card">
+      Cargando plan de pagos...
+    </section>
+  }
+
+  @if (errorMessage) {
+    <section class="state-card error">
+      <p>{{ errorMessage }}</p>
+      <a routerLink="/simulation">Volver a Simulación</a>
+    </section>
+  }
+
+  @if (!isLoading && calculation) {
+    <div class="page-content">
+      <section class="page-header">
+        <div>
+          <h1>Tabla de Amortización</h1>
+
+          <p>
+            Detalle mensual del crédito para
+            {{ calculation.input.client.fullName }}.
+          </p>
+        </div>
+
+        <div class="header-actions">
+          <button type="button">
+            <span class="material-symbols-outlined">description</span>
+            Exportar PDF
+          </button>
+
+          <button type="button">
+            <span class="material-symbols-outlined">table_chart</span>
+            Exportar Excel
+          </button>
+        </div>
+      </section>
+
+      <section class="stats-grid">
+        <article>
+          <span>Monto Total</span>
+          <strong>
+            {{ calculation.results.initialCapital | currency:currencyCode:'symbol':'1.2-2' }}
+          </strong>
+        </article>
+
+        <article>
+          <span>Tasa Anual</span>
+          <strong>
+            {{ calculation.results.effectiveRatePercentage | number:'1.2-2' }}%
+          </strong>
+        </article>
+
+        <article>
+          <span>Plazo</span>
+          <strong>
+            {{ calculation.results.termMonths }} Meses
+          </strong>
+        </article>
+
+        <article>
+          <span>Cuota Mensual</span>
+          <strong>
+            {{ calculation.results.monthlyPayment | currency:currencyCode:'symbol':'1.2-2' }}
+          </strong>
+        </article>
+      </section>
+
+      <form class="filters-card" [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+        <div class="month-filter">
+          <label>Rango de Meses</label>
+
+          <div class="month-inputs">
+            <input type="number" formControlName="fromMonth" placeholder="Desde" />
+            <span>—</span>
+            <input type="number" formControlName="toMonth" placeholder="Hasta" />
+          </div>
+        </div>
+
+        <div class="status-filter">
+          <label>Filtrar por Estado</label>
+
+          <select formControlName="status">
+            <option value="ALL">Todos los meses</option>
+            <option value="PENDING">Pendientes</option>
+            <option value="COMPLETED">Completados</option>
+            <option value="NEXT">Próximo</option>
+          </select>
+        </div>
+
+        <div class="filter-actions">
+          <button class="primary-button" type="submit">
+            Aplicar Filtros
+          </button>
+
+          <button class="ghost-button" type="button" (click)="clearFilters()">
+            Limpiar
+          </button>
+        </div>
+      </form>
+
+      <section class="table-card">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+            <tr>
+              <th>Mes</th>
+              <th class="right">Saldo Inicial</th>
+              <th class="right">Interés</th>
+              <th class="right">Amortización</th>
+              <th class="right">Seguro/Gastos</th>
+              <th class="right">Cuota Total</th>
+              <th class="right">Saldo Final</th>
+              <th class="center">Estado</th>
+            </tr>
+            </thead>
+
+            <tbody>
+              @for (row of paginatedRows; track row.period) {
+                <tr>
+                  <td class="period-cell">Mes {{ row.period }}</td>
+
+                  <td class="right">
+                    {{ row.initialBalance | currency:currencyCode:'symbol':'1.2-2' }}
+                  </td>
+
+                  <td class="right">
+                    {{ row.interest | currency:currencyCode:'symbol':'1.2-2' }}
+                  </td>
+
+                  <td class="right">
+                    {{ row.amortization | currency:currencyCode:'symbol':'1.2-2' }}
+                  </td>
+
+                  <td class="right">
+                    {{ row.costs | currency:currencyCode:'symbol':'1.2-2' }}
+                  </td>
+
+                  <td class="right total-cell">
+                    {{ row.totalPayment | currency:currencyCode:'symbol':'1.2-2' }}
+                  </td>
+
+                  <td class="right">
+                    {{ row.finalBalance | currency:currencyCode:'symbol':'1.2-2' }}
+                  </td>
+
+                  <td class="center">
+                    <span class="status-pill" [class]="getStatusClass(row.status)">
+                      {{ statusLabelMap[row.status] }}
+                    </span>
+                  </td>
+                </tr>
+              }
+
+              @if (!paginatedRows.length) {
+                <tr>
+                  <td colspan="8" class="empty-cell">
+                    No hay cuotas que coincidan con los filtros aplicados.
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <footer class="table-footer">
+          <span>
+            Mostrando {{ showingFrom }} - {{ showingTo }} de {{ filteredRows.length }} meses
+          </span>
+
+          <div class="pagination">
+            <button
+              type="button"
+              [disabled]="currentPage === 1"
+              (click)="previousPage()"
+            >
+              <span class="material-symbols-outlined">chevron_left</span>
+            </button>
+
+            <span>Página {{ currentPage }} de {{ totalPages }}</span>
+
+            <button
+              type="button"
+              [disabled]="currentPage === totalPages"
+              (click)="nextPage()"
+            >
+              <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+          </div>
+        </footer>
+      </section>
+    </div>
+  }
+</main>
+
+<nav class="mobile-nav">
+  <a routerLink="/dashboard">
+    <span class="material-symbols-outlined">dashboard</span>
+    <span>Dashboard</span>
+  </a>
+
+  <a class="active" routerLink="/simulation">
+    <span class="material-symbols-outlined">calculate</span>
+    <span>Simulación</span>
+  </a>
+
+  <a href="#">
+    <span class="material-symbols-outlined">history</span>
+    <span>Historial</span>
+  </a>
+
+  <a href="#">
+    <span class="material-symbols-outlined">person</span>
+    <span>Perfil</span>
+  </a>
+</nav>
