@@ -1,0 +1,156 @@
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <h1>CrediAuto</h1>
+    <p>Simulador de Crédito</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a routerLink="/dashboard">
+      <span class="material-symbols-outlined">dashboard</span>
+      Dashboard
+    </a>
+
+    <a routerLink="/simulation">
+      <span class="material-symbols-outlined">calculate</span>
+      Simulación
+    </a>
+
+    <a routerLink="/history">
+      <span class="material-symbols-outlined">history</span>
+      Historial
+    </a>
+
+    <a class="active" routerLink="/help">
+      <span class="material-symbols-outlined">help</span>
+      Ayuda
+    </a>
+  </nav>
+</aside>
+
+<main class="help-page">
+  <section class="profile-card" aria-labelledby="profile-title">
+    <div class="profile-summary">
+      <div class="profile-avatar" aria-hidden="true">
+        <span class="material-symbols-outlined">person</span>
+      </div>
+
+      <div>
+        <h2 id="profile-title">Perfil</h2>
+        <p>Gestión de cuenta</p>
+      </div>
+    </div>
+
+    <form class="profile-form" [formGroup]="profileForm" (ngSubmit)="submitProfile()">
+      <div class="form-field">
+        <label for="fullName">Nombre completo</label>
+        <input id="fullName" type="text" formControlName="fullName" />
+      </div>
+
+      <div class="form-field">
+        <label for="password">Contraseña</label>
+        <div class="password-field">
+          <input
+            id="password"
+            [type]="passwordVisible ? 'text' : 'password'"
+            formControlName="password"
+            autocomplete="current-password"
+          />
+
+          <button
+            class="password-toggle"
+            type="button"
+            [attr.aria-label]="passwordVisible ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+            (click)="togglePasswordVisibility()"
+          >
+            <span class="material-symbols-outlined">
+              {{ passwordVisible ? 'visibility_off' : 'visibility' }}
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label for="preferredCurrency">Preferencia de moneda</label>
+        <select id="preferredCurrency" formControlName="preferredCurrency">
+          <option value="PEN">Soles (PEN)</option>
+          <option value="USD">Dólares (USD)</option>
+        </select>
+      </div>
+
+      @if (successMessage) {
+        <p class="success-message">{{ successMessage }}</p>
+      }
+
+      <button class="update-button" type="submit">Actualizar datos</button>
+    </form>
+  </section>
+
+  <section class="help-content" aria-labelledby="help-title">
+    <div class="help-heading">
+      <h1 id="help-title">Centro de Ayuda</h1>
+
+      <div class="search-box">
+        <span class="material-symbols-outlined" aria-hidden="true">search</span>
+        <input
+          #searchInput
+          type="search"
+          [value]="searchTerm"
+          (input)="searchTerm = searchInput.value"
+          placeholder="Busca respuestas sobre TCEA, cuotas o requisitos..."
+          aria-label="Buscar preguntas frecuentes"
+        />
+      </div>
+    </div>
+
+    <div class="faq-list">
+      @for (faq of filteredFaqs; track faq.id) {
+        <article class="faq-item" [class.open]="faq.isOpen">
+          <button
+            class="faq-button"
+            type="button"
+            [attr.aria-expanded]="faq.isOpen"
+            [attr.aria-controls]="'faq-answer-' + faq.id"
+            (click)="toggleFaq(faq.id)"
+          >
+            <span>{{ faq.question }}</span>
+            <span class="material-symbols-outlined" aria-hidden="true">
+              {{ faq.isOpen ? 'expand_less' : 'expand_more' }}
+            </span>
+          </button>
+
+          @if (faq.isOpen) {
+            <div class="faq-answer" [id]="'faq-answer-' + faq.id">
+              {{ faq.answer }}
+            </div>
+          }
+        </article>
+      }
+
+      @if (!filteredFaqs.length) {
+        <p class="empty-state">No se encontraron resultados.</p>
+      }
+    </div>
+  </section>
+</main>
+
+<nav class="mobile-nav" aria-label="Navegación móvil">
+  <a routerLink="/dashboard">
+    <span class="material-symbols-outlined">dashboard</span>
+    <span>Inicio</span>
+  </a>
+
+  <a routerLink="/simulation">
+    <span class="material-symbols-outlined">calculate</span>
+    <span>Simular</span>
+  </a>
+
+  <a routerLink="/history">
+    <span class="material-symbols-outlined">history</span>
+    <span>Historial</span>
+  </a>
+
+  <a class="active" routerLink="/help">
+    <span class="material-symbols-outlined">help</span>
+    <span>Ayuda</span>
+  </a>
+</nav>

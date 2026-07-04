@@ -21,21 +21,20 @@
 }
 
 .sidebar-brand {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  padding: 0 16px;
 }
 
-.sidebar-brand span {
+.sidebar-brand h1 {
+  margin: 0;
   color: #4f46e5;
   font-size: 24px;
   line-height: 32px;
-  font-weight: 800;
 }
 
-.sidebar-brand small {
+.sidebar-brand p {
+  margin: 4px 0 0;
   color: #4b5563;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
 }
 
@@ -64,10 +63,6 @@
 .sidebar-nav a.active {
   background: #4f46e5;
   color: #ffffff;
-}
-
-.mobile-header {
-  display: none;
 }
 
 .history-page {
@@ -425,31 +420,6 @@ tbody tr:hover {
 @media (max-width: 900px) {
   .sidebar {
     display: none;
-  }
-
-  .mobile-header {
-    position: sticky;
-    top: 0;
-    height: 64px;
-    background: #ffffff;
-    border-bottom: 1px solid #e5e7eb;
-    padding: 0 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    z-index: 50;
-  }
-
-  .mobile-header span {
-    color: #4f46e5;
-    font-size: 20px;
-    font-weight: 800;
-  }
-
-  .mobile-header button {
-    border: none;
-    background: transparent;
-    color: #4f46e5;
   }
 
   .history-page {

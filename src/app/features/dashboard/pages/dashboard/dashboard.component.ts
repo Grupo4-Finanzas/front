@@ -52,7 +52,7 @@ export class DashboardComponent implements OnInit {
         this.user = user;
         this.dashboard = dashboard;
 
-        this.recentSimulations = simulationHistory.slice(0, 3);
+        this.recentSimulations = simulationHistory.slice(0, 5);
 
         this.isLoading = false;
       },

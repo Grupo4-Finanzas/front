@@ -1,20 +1,3 @@
-<header class="app-header">
-  <div class="header-content">
-    <div class="brand">CrediAuto</div>
-
-    <nav class="desktop-nav">
-      <a routerLink="/dashboard">Dashboard</a>
-      <a class="active" routerLink="/simulation">Simulación</a>
-      <a routerLink="/history">Historial</a>
-      <a href="#">Ayuda</a>
-    </nav>
-
-    <button class="profile-button" type="button">
-      <span class="material-symbols-outlined">account_circle</span>
-    </button>
-  </div>
-</header>
-
 <aside class="sidebar">
   <div class="sidebar-brand">
     <h1>CrediAuto</h1>
@@ -37,9 +20,9 @@
       Historial
     </a>
 
-    <a href="#">
-      <span class="material-symbols-outlined">person</span>
-      Perfil
+    <a routerLink="/help">
+      <span class="material-symbols-outlined">help</span>
+      Ayuda
     </a>
   </nav>
 </aside>
@@ -426,8 +409,8 @@
     <span>Historial</span>
   </a>
 
-  <a href="#">
-    <span class="material-symbols-outlined">person</span>
-    <span>Perfil</span>
+  <a routerLink="/help">
+    <span class="material-symbols-outlined">help</span>
+    <span>Ayuda</span>
   </a>
 </nav>

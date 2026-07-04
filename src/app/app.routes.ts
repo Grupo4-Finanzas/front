@@ -5,6 +5,7 @@ import { SimulationComponent } from './features/simulation/pages/simulation/simu
 import { SimulationResultsComponent } from './features/simulation/pages/simulation-results/simulation-results.component';
 import { PaymentPlanDetailComponent } from './features/simulation/pages/payment-plan-detail/payment-plan-detail.component';
 import { SimulationHistoryComponent } from './features/history/pages/simulation-history/simulation-history.component';
+import { HelpCenterComponent } from './features/help/pages/help-center/help-center.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'auth', pathMatch: 'full' },
@@ -14,5 +15,6 @@ export const routes: Routes = [
   { path: 'simulation-results/:id', component: SimulationResultsComponent },
   { path: 'simulation-results/:id/payment-plan', component: PaymentPlanDetailComponent },
   { path: 'history', component: SimulationHistoryComponent },
+  { path: 'help', component: HelpCenterComponent },
   { path: '**', redirectTo: 'auth' }
 ];

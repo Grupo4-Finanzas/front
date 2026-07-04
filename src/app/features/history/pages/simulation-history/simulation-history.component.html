@@ -1,7 +1,8 @@
+﻿
 <aside class="sidebar">
   <div class="sidebar-brand">
-    <span>CrediAuto</span>
-    <small>Simulador de Crédito</small>
+    <h1>CrediAuto</h1>
+    <p>Simulador de Crédito</p>
   </div>
 
   <nav class="sidebar-nav">
@@ -20,20 +21,12 @@
       Historial
     </a>
 
-    <a href="#">
-      <span class="material-symbols-outlined">person</span>
-      Perfil
+    <a routerLink="/help">
+      <span class="material-symbols-outlined">help</span>
+      Ayuda
     </a>
   </nav>
 </aside>
-
-<header class="mobile-header">
-  <span>CrediAuto</span>
-
-  <button type="button">
-    <span class="material-symbols-outlined">account_circle</span>
-  </button>
-</header>
 
 <main class="history-page">
   <div class="page-content">
@@ -197,7 +190,7 @@
 
     <section class="insight-grid">
       <article class="cta-card">
-        <h2>¿Listo para una nueva comparación?</h2>
+        <h2>Listo para una nueva comparación?</h2>
 
         @if (latestSimulation) {
           <p>
@@ -249,8 +242,8 @@
     <span>Historial</span>
   </a>
 
-  <a href="#">
-    <span class="material-symbols-outlined">person</span>
-    <span>Perfil</span>
+  <a routerLink="/help">
+    <span class="material-symbols-outlined">help</span>
+    <span>Ayuda</span>
   </a>
 </nav>

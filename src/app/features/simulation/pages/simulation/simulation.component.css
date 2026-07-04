@@ -6,73 +6,13 @@
   font-family: Inter, Arial, sans-serif;
 }
 
-.app-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 64px;
-  background: #ffffff;
-  border-bottom: 1px solid #e5e7eb;
-  z-index: 50;
-}
-
-.header-content {
-  height: 100%;
-  padding: 0 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.brand {
-  color: #4f46e5;
-  font-size: 20px;
-  font-weight: 800;
-}
-
-.desktop-nav {
-  display: flex;
-  align-items: center;
-  gap: 32px;
-}
-
-.desktop-nav a {
-  color: #4b5563;
-  text-decoration: none;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-}
-
-.desktop-nav a:hover,
-.desktop-nav a.active {
-  color: #4f46e5;
-}
-
-.desktop-nav a.active {
-  border-bottom: 2px solid #4f46e5;
-  padding-bottom: 4px;
-}
-
-.profile-button {
-  border: none;
-  background: transparent;
-  color: #4b5563;
-  cursor: pointer;
-}
-
-.profile-button:hover {
-  color: #4f46e5;
-}
-
 .sidebar {
   position: fixed;
   left: 0;
   top: 0;
   width: 256px;
   height: 100vh;
-  padding: 80px 16px 16px;
+  padding: 24px 16px;
   background: #f9fafb;
   border-right: 1px solid #e5e7eb;
   display: flex;
@@ -128,7 +68,7 @@
 
 .simulation-page {
   margin-left: 256px;
-  padding: 96px 24px 48px;
+  padding: 32px 24px 48px;
 }
 
 .page-content {
@@ -486,12 +426,8 @@ small {
 }
 
 @media (max-width: 768px) {
-  .desktop-nav {
-    display: none;
-  }
-
   .simulation-page {
-    padding: 96px 16px 96px;
+    padding: 24px 16px 96px;
   }
 
   .two-columns,

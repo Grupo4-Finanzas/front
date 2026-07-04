@@ -1,19 +1,31 @@
-<header class="app-header">
-  <div class="header-content">
-    <div class="brand">CrediAuto</div>
-
-    <nav class="desktop-nav">
-      <a class="active" routerLink="/dashboard">Dashboard</a>
-      <a routerLink="/simulation">Simulación</a>
-      <a routerLink="/history">Historial</a>
-      <a href="#">Ayuda</a>
-    </nav>
-
-    <button class="profile-button" type="button">
-      <span class="material-symbols-outlined">account_circle</span>
-    </button>
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <h1>CrediAuto</h1>
+    <p>Simulador de Crédito</p>
   </div>
-</header>
+
+  <nav class="sidebar-nav">
+    <a class="active" routerLink="/dashboard">
+      <span class="material-symbols-outlined">dashboard</span>
+      Dashboard
+    </a>
+
+    <a routerLink="/simulation">
+      <span class="material-symbols-outlined">calculate</span>
+      Simulación
+    </a>
+
+    <a routerLink="/history">
+      <span class="material-symbols-outlined">history</span>
+      Historial
+    </a>
+
+    <a routerLink="/help">
+      <span class="material-symbols-outlined">help</span>
+      Ayuda
+    </a>
+  </nav>
+</aside>
 
 <main class="dashboard-page">
   @if (isLoading) {
@@ -141,33 +153,6 @@
           </table>
         </div>
       </article>
-
-      <aside class="side-column">
-        <article class="vehicle-card">
-          <h3>Vehículo Recomendado</h3>
-
-          <p>
-            {{ dashboard.recommendedVehicle.description }}
-          </p>
-
-          <img
-            [src]="dashboard.recommendedVehicle.imageUrl"
-            [alt]="dashboard.recommendedVehicle.name"
-          />
-
-          <div class="vehicle-info">
-            <strong>{{ dashboard.recommendedVehicle.name }}</strong>
-
-            <span>
-              {{ dashboard.recommendedVehicle.price | currency:'USD':'symbol':'1.0-0' }}
-            </span>
-          </div>
-
-          <button type="button">
-            Ver Financiamiento
-          </button>
-        </article>
-      </aside>
     </section>
   }
 </main>
@@ -188,8 +173,8 @@
     <span>Historial</span>
   </button>
 
-  <button type="button">
-    <span class="material-symbols-outlined">person</span>
-    <span>Perfil</span>
+  <button type="button" routerLink="/help">
+    <span class="material-symbols-outlined">help</span>
+    <span>Ayuda</span>
   </button>
 </nav>
