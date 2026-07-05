@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -17,13 +17,14 @@ import { SimulationService } from '../../../../core/services/simulation.service'
   templateUrl: './simulation.component.html',
   styleUrl: './simulation.component.css'
 })
-export class SimulationComponent {
+export class SimulationComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly simulationService = inject(SimulationService);
   private readonly router = inject(Router);
 
   successMessage = '';
   errorMessage = '';
+  isSubmitting = false;
 
   simulationForm = this.fb.nonNullable.group({
     documentNumber: ['', [Validators.required]],
@@ -32,23 +33,44 @@ export class SimulationComponent {
     currency: ['PEN' as CurrencyCode, [Validators.required]],
     vehiclePrice: [0, [Validators.required, Validators.min(1)]],
 
-    initialFeePercentage: [20, [Validators.required, Validators.min(0), Validators.max(100)]],
+    initialFeePercentage: [0, [Validators.required, Validators.min(0), Validators.max(100)]],
     balloonFeePercentage: [0, [Validators.required, Validators.min(0), Validators.max(100)]],
-    termMonths: [48, [Validators.required, Validators.min(1)]],
+    termMonths: [0, [Validators.required, Validators.min(1)]],
 
     rateType: ['TEA', [Validators.required]],
-    rateValuePercentage: [12.5, [Validators.required, Validators.min(0)]],
+    rateValuePercentage: [0, [Validators.required, Validators.min(0)]],
     paymentFrequency: ['MONTHLY', [Validators.required]],
 
     graceType: ['NONE' as GraceType, [Validators.required]],
     graceMonths: [0, [Validators.required, Validators.min(0)]],
 
-    targetTirPercentage: [15, [Validators.required, Validators.min(0), Validators.max(100)]],
+    targetTirPercentage: [0, [Validators.required, Validators.min(0), Validators.max(100)]],
 
-    lifeInsuranceMonthlyRatePercentage: [0.05, [Validators.required, Validators.min(0)]],
-    administrativeExpenses: [10, [Validators.required, Validators.min(0)]],
-    vehicleInsuranceAnnualRatePercentage: [3.5, [Validators.required, Validators.min(0)]]
+    lifeInsuranceMonthlyRatePercentage: [0, [Validators.required, Validators.min(0)]],
+    administrativeExpenses: [0, [Validators.required, Validators.min(0)]],
+    vehicleInsuranceAnnualRatePercentage: [0, [Validators.required, Validators.min(0)]]
   });
+
+  ngOnInit(): void {
+    this.simulationForm.reset({
+      documentNumber: '',
+      fullName: '',
+      currency: 'PEN',
+      vehiclePrice: 0,
+      initialFeePercentage: 0,
+      balloonFeePercentage: 0,
+      termMonths: 0,
+      rateType: 'TEA',
+      rateValuePercentage: 0,
+      paymentFrequency: 'MONTHLY',
+      graceType: 'NONE',
+      graceMonths: 0,
+      targetTirPercentage: 0,
+      lifeInsuranceMonthlyRatePercentage: 0,
+      administrativeExpenses: 0,
+      vehicleInsuranceAnnualRatePercentage: 0
+    });
+  }
 
   setCurrency(currency: CurrencyCode): void {
     this.simulationForm.controls.currency.setValue(currency);
@@ -107,11 +129,15 @@ export class SimulationComponent {
       }
     };
 
+    this.isSubmitting = true;
+
     this.simulationService.calculateSimulation(draft).subscribe({
       next: response => {
+        this.isSubmitting = false;
         this.router.navigateByUrl(`/simulation-results/${response.id}`);
       },
       error: () => {
+        this.isSubmitting = false;
         this.errorMessage = 'No se pudo calcular la simulación.';
       }
     });

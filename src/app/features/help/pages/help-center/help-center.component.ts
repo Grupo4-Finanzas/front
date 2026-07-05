@@ -6,11 +6,6 @@ import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 import { User } from '../../../../core/models/user.model';
 
-interface ProfilePreferences {
-  fullName: string;
-  preferredCurrency: string;
-}
-
 interface FaqItem {
   id: number;
   question: string;
@@ -28,7 +23,6 @@ interface FaqItem {
 export class HelpCenterComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly fb = inject(FormBuilder);
-  private readonly preferencesKey = 'crediauto_profile_preferences';
 
   user?: User;
   successMessage = '';
@@ -37,7 +31,7 @@ export class HelpCenterComponent implements OnInit {
 
   profileForm = this.fb.nonNullable.group({
     fullName: [''],
-    password: ['********'],
+    password: [''],
     preferredCurrency: ['PEN']
   });
 
@@ -72,11 +66,11 @@ export class HelpCenterComponent implements OnInit {
     this.authService.getCurrentUser$().subscribe({
       next: user => {
         this.user = user;
-        const savedPreferences = this.getSavedPreferences();
 
         this.profileForm.patchValue({
-          fullName: savedPreferences?.fullName || user.fullName,
-          preferredCurrency: savedPreferences?.preferredCurrency || 'PEN'
+          fullName: user.fullName,
+          password: '',
+          preferredCurrency: 'PEN'
         });
       }
     });
@@ -85,13 +79,8 @@ export class HelpCenterComponent implements OnInit {
   submitProfile(): void {
     const { fullName, preferredCurrency } = this.profileForm.getRawValue();
 
-    const preferences: ProfilePreferences = {
-      fullName,
-      preferredCurrency
-    };
-
-    localStorage.setItem(this.preferencesKey, JSON.stringify(preferences));
-    this.successMessage = 'Datos actualizados.';
+    this.successMessage = 'Preferencias guardadas localmente.';
+    this.profileForm.patchValue({ password: '' });
   }
 
   get filteredFaqs(): FaqItem[] {
@@ -116,19 +105,5 @@ export class HelpCenterComponent implements OnInit {
 
   togglePasswordVisibility(): void {
     this.passwordVisible = !this.passwordVisible;
-  }
-
-  private getSavedPreferences(): ProfilePreferences | null {
-    const rawPreferences = localStorage.getItem(this.preferencesKey);
-
-    if (!rawPreferences) {
-      return null;
-    }
-
-    try {
-      return JSON.parse(rawPreferences) as ProfilePreferences;
-    } catch {
-      return null;
-    }
   }
 }

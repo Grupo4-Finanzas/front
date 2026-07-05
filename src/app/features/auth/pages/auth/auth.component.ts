@@ -22,6 +22,7 @@ export class AuthComponent {
   activeTab: AuthTab = 'login';
   errorMessage = '';
   successMessage = '';
+  isSubmitting = false;
 
   loginForm = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -31,7 +32,7 @@ export class AuthComponent {
   registerForm = this.fb.nonNullable.group({
     fullName: ['', [Validators.required, Validators.minLength(3)]],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
+    password: ['', [Validators.required, Validators.minLength(8)]],
     confirmPassword: ['', [Validators.required]],
     acceptedPrivacy: [false, [Validators.requiredTrue]]
   });
@@ -43,25 +44,55 @@ export class AuthComponent {
   }
 
   submitLogin(): void {
-    this.authService.startSession().subscribe({
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      return;
+    }
+
+    this.isSubmitting = true;
+
+    this.authService.login(this.loginForm.getRawValue()).subscribe({
       next: () => {
+        this.isSubmitting = false;
         this.router.navigateByUrl('/dashboard');
       },
       error: () => {
-        this.errorMessage = 'No se pudo iniciar sesión.';
-        this.successMessage = '';
+        this.isSubmitting = false;
+        this.errorMessage = 'Correo o contraseña incorrectos.';
       }
     });
   }
 
   submitRegister(): void {
-    this.authService.startSession().subscribe({
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
+      return;
+    }
+
+    const formValue = this.registerForm.getRawValue();
+
+    if (formValue.password !== formValue.confirmPassword) {
+      this.errorMessage = 'Las contraseñas no coinciden.';
+      return;
+    }
+
+    this.isSubmitting = true;
+
+    this.authService.register(formValue).subscribe({
       next: () => {
+        this.isSubmitting = false;
         this.router.navigateByUrl('/dashboard');
       },
-      error: () => {
-        this.errorMessage = 'No se pudo crear sesión.';
-        this.successMessage = '';
+      error: (err) => {
+        this.isSubmitting = false;
+        this.errorMessage =
+          err?.error?.message || 'No se pudo completar el registro.';
       }
     });
   }

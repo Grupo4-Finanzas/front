@@ -56,6 +56,9 @@
     <section class="summary-section">
       <h2>Resumen de última simulación</h2>
 
+      @if (dashboard.summary.termMonths === 0) {
+        <p class="empty-summary">Aún no tienes simulaciones. Crea una nueva para ver tu resumen.</p>
+      } @else {
       <div class="summary-grid">
         <article class="summary-card">
           <span class="summary-label">TCEA</span>
@@ -93,6 +96,7 @@
           </div>
         </article>
       </div>
+      }
     </section>
 
     <section class="content-grid">

@@ -34,15 +34,10 @@ export class SimulationResultsComponent implements OnInit {
     this.simulationService.getCalculationResultById(id).subscribe({
       next: result => {
         this.calculation = result;
-
-        if (!result) {
-          this.errorMessage = 'No se encontraron resultados para esta simulación.';
-        }
-
         this.isLoading = false;
       },
       error: () => {
-        this.errorMessage = 'No se pudieron cargar los resultados.';
+        this.errorMessage = 'No se encontraron resultados para esta simulación.';
         this.isLoading = false;
       }
     });
