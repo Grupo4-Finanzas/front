@@ -21,10 +21,20 @@
       Historial
     </a>
 
+    <a routerLink="/profile">
+      <span class="material-symbols-outlined">person</span>
+      Perfil
+    </a>
+
     <a routerLink="/help">
       <span class="material-symbols-outlined">help</span>
       Ayuda
     </a>
+
+    <button type="button" class="logout-button" (click)="logout()">
+      <span class="material-symbols-outlined">logout</span>
+      Cerrar sesión
+    </button>
   </nav>
 </aside>
 
@@ -163,7 +173,7 @@
 
       <footer class="table-footer">
         <span>
-          Mostrando {{ showingFrom }}-{{ showingTo }} de {{ filteredItems.length }} simulaciones
+          Mostrando {{ showingFrom }}-{{ showingTo }} de {{ totalElements }} simulaciones
         </span>
 
         <div class="pagination">

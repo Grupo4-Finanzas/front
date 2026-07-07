@@ -1,3 +1,5 @@
+import { SimulationHistoryItem } from './simulation.model';
+
 export interface DashboardData {
   summary: SimulationSummary;
   simulations: SimulationHistoryItem[];
@@ -9,13 +11,6 @@ export interface SimulationSummary {
   van: number;
   monthlyPayment: number;
   termMonths: number;
-}
-
-export interface SimulationHistoryItem {
-  id: number;
-  date: string;
-  vehiclePrice: number;
-  tcea: number;
 }
 
 export interface RecommendedVehicle {

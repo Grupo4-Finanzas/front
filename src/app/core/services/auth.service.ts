@@ -11,6 +11,11 @@ interface AuthResponse {
   user: User;
 }
 
+interface ForgotPasswordResponse {
+  message: string;
+  resetToken?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -37,12 +42,49 @@ export class AuthService {
   }
 
   register(request: RegisterRequest): Observable<User> {
+    const { acceptedPrivacy: _acceptedPrivacy, ...payload } = request;
+
     return this.http
-      .post<AuthResponse>(`${environment.apiUrl}/auth/register`, request)
+      .post<AuthResponse>(`${environment.apiUrl}/auth/register`, payload)
       .pipe(
         tap(response => this.persistSession(response)),
         map(response => response.user)
       );
+  }
+
+  me(): Observable<User> {
+    return this.http.get<User>(`${environment.apiUrl}/auth/me`).pipe(
+      tap(user => localStorage.setItem(this.sessionKey, JSON.stringify(user)))
+    );
+  }
+
+  updateProfile(payload: { fullName: string }): Observable<User> {
+    return this.http.patch<User>(`${environment.apiUrl}/auth/me`, payload).pipe(
+      tap(user => localStorage.setItem(this.sessionKey, JSON.stringify(user)))
+    );
+  }
+
+  changePassword(payload: {
+    currentPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+  }): Observable<void> {
+    return this.http.post<void>(`${environment.apiUrl}/auth/me/password`, payload);
+  }
+
+  forgotPassword(payload: { email: string }): Observable<ForgotPasswordResponse> {
+    return this.http.post<ForgotPasswordResponse>(
+      `${environment.apiUrl}/auth/forgot-password`,
+      payload
+    );
+  }
+
+  resetPassword(payload: {
+    token: string;
+    newPassword: string;
+    confirmPassword: string;
+  }): Observable<void> {
+    return this.http.post<void>(`${environment.apiUrl}/auth/reset-password`, payload);
   }
 
   getCurrentUser(): User | null {
@@ -55,7 +97,7 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return !!this.getToken() && !!this.getCurrentUser();
+    return !!this.getToken();
   }
 
   getCurrentUser$(): Observable<User> {
@@ -65,7 +107,11 @@ export class AuthService {
       return of(currentUser);
     }
 
-    return throwError(() => new Error('No hay sesión activa.'));
+    if (this.getToken()) {
+      return this.me();
+    }
+
+    return throwError(() => new Error('No hay sesion activa.'));
   }
 
   logout(): void {

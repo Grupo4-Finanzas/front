@@ -1,0 +1,150 @@
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <h1>CrediAuto</h1>
+    <p>Simulador de Credito</p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a routerLink="/dashboard">
+      <span class="material-symbols-outlined">dashboard</span>
+      Dashboard
+    </a>
+
+    <a routerLink="/simulation">
+      <span class="material-symbols-outlined">calculate</span>
+      Simulacion
+    </a>
+
+    <a routerLink="/history">
+      <span class="material-symbols-outlined">history</span>
+      Historial
+    </a>
+
+    <a class="active" routerLink="/profile">
+      <span class="material-symbols-outlined">person</span>
+      Perfil
+    </a>
+
+    <a routerLink="/help">
+      <span class="material-symbols-outlined">help</span>
+      Ayuda
+    </a>
+
+    <button type="button" class="logout-button" (click)="logout()">
+      <span class="material-symbols-outlined">logout</span>
+      Cerrar sesion
+    </button>
+  </nav>
+</aside>
+
+<main class="profile-page">
+  <section class="profile-card" aria-labelledby="profile-title">
+    <div class="profile-summary">
+      <div class="profile-avatar" aria-hidden="true">
+        <span class="material-symbols-outlined">person</span>
+      </div>
+
+      <div>
+        <h1 id="profile-title">Perfil</h1>
+        <p>{{ user?.email || 'Gestion de cuenta' }}</p>
+      </div>
+    </div>
+
+    <form class="profile-form" [formGroup]="profileForm" (ngSubmit)="submitProfile()">
+      <div class="form-field">
+        <label for="fullName">Nombre completo</label>
+        <input id="fullName" type="text" formControlName="fullName" />
+      </div>
+
+      <div class="form-field">
+        <label for="preferredCurrency">Preferencia de moneda</label>
+        <select id="preferredCurrency" formControlName="preferredCurrency">
+          <option value="PEN">Soles (PEN)</option>
+          <option value="USD">Dolares (USD)</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label for="currentPassword">Contrasena actual</label>
+        <div class="password-field">
+          <input
+            id="currentPassword"
+            [type]="passwordVisible ? 'text' : 'password'"
+            formControlName="currentPassword"
+            autocomplete="current-password"
+          />
+
+          <button
+            class="password-toggle"
+            type="button"
+            [attr.aria-label]="passwordVisible ? 'Ocultar contrasena' : 'Mostrar contrasena'"
+            (click)="togglePasswordVisibility()"
+          >
+            <span class="material-symbols-outlined">
+              {{ passwordVisible ? 'visibility_off' : 'visibility' }}
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label for="newPassword">Nueva contrasena</label>
+        <input
+          id="newPassword"
+          [type]="passwordVisible ? 'text' : 'password'"
+          formControlName="newPassword"
+          autocomplete="new-password"
+        />
+      </div>
+
+      <div class="form-field">
+        <label for="confirmPassword">Confirmar nueva contrasena</label>
+        <input
+          id="confirmPassword"
+          [type]="passwordVisible ? 'text' : 'password'"
+          formControlName="confirmPassword"
+          autocomplete="new-password"
+        />
+      </div>
+
+      @if (successMessage) {
+        <p class="success-message">{{ successMessage }}</p>
+      }
+
+      @if (errorMessage) {
+        <p class="error-message">{{ errorMessage }}</p>
+      }
+
+      <button class="update-button" type="submit" [disabled]="isSubmittingProfile">
+        {{ isSubmittingProfile ? 'Actualizando...' : 'Actualizar datos' }}
+      </button>
+    </form>
+  </section>
+</main>
+
+<nav class="mobile-nav" aria-label="Navegacion movil">
+  <a routerLink="/dashboard">
+    <span class="material-symbols-outlined">dashboard</span>
+    <span>Inicio</span>
+  </a>
+
+  <a routerLink="/simulation">
+    <span class="material-symbols-outlined">calculate</span>
+    <span>Simular</span>
+  </a>
+
+  <a routerLink="/history">
+    <span class="material-symbols-outlined">history</span>
+    <span>Historial</span>
+  </a>
+
+  <a class="active" routerLink="/profile">
+    <span class="material-symbols-outlined">person</span>
+    <span>Perfil</span>
+  </a>
+
+  <a routerLink="/help">
+    <span class="material-symbols-outlined">help</span>
+    <span>Ayuda</span>
+  </a>
+</nav>

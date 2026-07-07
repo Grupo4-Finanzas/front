@@ -76,12 +76,13 @@
   color: #ffffff;
 }
 
-.help-page {
+.profile-page {
   margin: 0 0 0 256px;
   padding: 32px 24px 96px;
 }
 
-.help-content {
+.profile-card {
+  max-width: 720px;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   background: #ffffff;
@@ -89,110 +90,136 @@
   padding: 28px;
 }
 
-.help-heading {
-  display: grid;
-  gap: 20px;
-  margin-bottom: 18px;
+.profile-summary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
 }
 
-.help-heading h1 {
+.profile-avatar {
+  width: 64px;
+  height: 64px;
+  border: 2px solid #4f46e5;
+  border-radius: 50%;
+  background: #e0e7ff;
+  color: #4f46e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-avatar .material-symbols-outlined {
+  font-size: 34px;
+}
+
+.profile-summary h1 {
   margin: 0;
   color: #4f46e5;
-  font-size: 40px;
-  line-height: 1.15;
+  font-size: 32px;
 }
 
-.search-box {
-  position: relative;
+.profile-summary p {
+  margin: 4px 0 0;
+  color: #4b5563;
+  font-size: 13px;
+  font-weight: 600;
 }
 
-.search-box .material-symbols-outlined {
-  position: absolute;
-  left: 16px;
-  top: 50%;
+.profile-form {
+  display: grid;
+  gap: 16px;
+}
+
+.form-field {
+  display: grid;
+  gap: 6px;
+}
+
+.form-field label {
   color: #4f46e5;
-  transform: translateY(-50%);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
 }
 
-.search-box input {
+.form-field input,
+.form-field select {
   width: 100%;
-  min-height: 58px;
+  min-height: 44px;
   border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  background: #fcfbff;
+  border-radius: 8px;
+  background: #f9fafb;
   color: #111827;
   font: inherit;
-  font-size: 16px;
   outline: none;
-  padding: 14px 16px 14px 52px;
-  box-sizing: border-box;
+  padding: 10px 12px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.search-box input:focus {
+.form-field input:focus,
+.form-field select:focus {
   border-color: #4f46e5;
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.14);
 }
 
-.faq-list {
-  display: grid;
-  gap: 10px;
+.password-field {
+  position: relative;
 }
 
-.faq-item {
-  overflow: hidden;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  background: #ffffff;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+.password-field input {
+  padding-right: 46px;
 }
 
-.faq-item:hover,
-.faq-item.open {
-  border-color: #4f46e5;
-}
-
-.faq-item.open {
-  box-shadow: 0 10px 24px rgba(79, 70, 229, 0.08);
-}
-
-.faq-button {
-  width: 100%;
-  min-height: 68px;
+.password-toggle {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  width: 34px;
+  height: 34px;
   border: 0;
+  border-radius: 8px;
   background: transparent;
   color: #4f46e5;
   cursor: pointer;
-  padding: 18px 20px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  text-align: left;
-  font-size: 18px;
-  font-weight: 800;
+  justify-content: center;
+  transform: translateY(-50%);
 }
 
-.faq-button .material-symbols-outlined {
-  flex: 0 0 auto;
+.password-toggle:hover {
+  background: #e0e7ff;
 }
 
-.faq-answer {
-  border-top: 1px solid #e5e7eb;
-  color: #4b5563;
-  padding: 18px 20px 22px;
-  line-height: 1.6;
-}
-
-.empty-state {
+.success-message,
+.error-message {
   margin: 0;
-  border: 1px dashed #e5e7eb;
-  border-radius: 12px;
-  background: #ffffff;
-  color: #4b5563;
-  padding: 24px;
-  text-align: center;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
   font-weight: 700;
+}
+
+.success-message {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.error-message {
+  background: #fff0f0;
+  color: #ba1a1a;
+}
+
+.update-button {
+  min-height: 48px;
+  border: 0;
+  border-radius: 10px;
+  background: #4f46e5;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 800;
 }
 
 .mobile-nav {
@@ -204,22 +231,13 @@
     display: none;
   }
 
-  .help-page {
+  .profile-page {
     margin-left: 0;
     padding: 24px 16px 104px;
   }
 
-  .help-content {
+  .profile-card {
     padding: 20px;
-  }
-
-  .help-heading h1 {
-    font-size: 32px;
-  }
-
-  .faq-button {
-    min-height: 60px;
-    font-size: 16px;
   }
 
   .mobile-nav {

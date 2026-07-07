@@ -26,3 +26,29 @@ body {
   -webkit-font-smoothing: antialiased;
   font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
+
+.sidebar .sidebar-nav {
+  min-height: calc(100vh - 104px);
+}
+
+button.logout-button {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  margin-top: auto;
+  color: #dc2626;
+  text-decoration: none;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+button.logout-button:hover {
+  background: #fef2f2;
+}

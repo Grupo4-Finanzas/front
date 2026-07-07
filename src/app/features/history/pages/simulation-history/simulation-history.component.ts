@@ -1,13 +1,14 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule, CurrencyPipe, DecimalPipe, DatePipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 import {
   SimulationHistoryItem,
   SimulationHistoryStatus
 } from '../../../../core/models/simulation.model';
 import { SimulationService } from '../../../../core/services/simulation.service';
+import { AuthService } from '../../../../core/services/auth.service';
 
 type DateRangeFilter = 'LAST_30_DAYS' | 'LAST_3_MONTHS' | 'THIS_YEAR' | 'ALL_TIME';
 type StatusFilter = 'ALL' | SimulationHistoryStatus;
@@ -28,6 +29,8 @@ type StatusFilter = 'ALL' | SimulationHistoryStatus;
 })
 export class SimulationHistoryComponent implements OnInit {
   private readonly simulationService = inject(SimulationService);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
 
   allItems: SimulationHistoryItem[] = [];
@@ -35,6 +38,8 @@ export class SimulationHistoryComponent implements OnInit {
 
   currentPage = 1;
   pageSize = 6;
+  totalElements = 0;
+  backendTotalPages = 1;
 
   filterForm = this.fb.nonNullable.group({
     search: [''],
@@ -46,35 +51,31 @@ export class SimulationHistoryComponent implements OnInit {
     this.loadHistory();
   }
 
-  loadHistory(): void {
-    this.simulationService.getSimulationHistory().subscribe({
-      next: history => {
-        this.allItems = history;
-        this.filteredItems = history;
-        this.currentPage = 1;
-      }
-    });
+  loadHistory(pageIndex = this.currentPage - 1): void {
+    const { dateRange } = this.filterForm.getRawValue();
+    const { createdFrom, createdTo } = this.getDateRangeParams(dateRange);
+
+    this.simulationService
+      .getSimulationHistoryPage(pageIndex, this.pageSize, createdFrom, createdTo)
+      .subscribe({
+        next: response => {
+          this.allItems = response.content;
+          this.currentPage = response.page + 1;
+          this.totalElements = response.totalElements;
+          this.backendTotalPages = Math.max(response.totalPages, 1);
+          this.applyLocalFilters();
+        }
+      });
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigateByUrl('/auth');
   }
 
   applyFilters(): void {
-    const { search, dateRange, status } = this.filterForm.getRawValue();
-    const normalizedSearch = search.trim().toLowerCase();
-
-    this.filteredItems = this.allItems.filter(item => {
-      const matchesSearch =
-        !normalizedSearch ||
-        String(item.id).includes(normalizedSearch) ||
-        String(item.vehiclePrice).includes(normalizedSearch) ||
-        String(item.tceaPercentage).includes(normalizedSearch) ||
-        String(item.monthlyPayment).includes(normalizedSearch);
-
-      const matchesDate = this.matchesDateRange(item.createdAt, dateRange);
-      const matchesStatus = status === 'ALL' || item.status === status;
-
-      return matchesSearch && matchesDate && matchesStatus;
-    });
-
     this.currentPage = 1;
+    this.loadHistory(0);
   }
 
   clearFilters(): void {
@@ -84,12 +85,12 @@ export class SimulationHistoryComponent implements OnInit {
       status: 'ALL'
     });
 
-    this.filteredItems = this.allItems;
     this.currentPage = 1;
+    this.loadHistory(0);
   }
 
   deleteSimulation(id: number): void {
-    const shouldDelete = confirm('¿Eliminar esta simulación del historial?');
+    const shouldDelete = confirm('Eliminar esta simulacion del historial?');
 
     if (!shouldDelete) {
       return;
@@ -97,34 +98,33 @@ export class SimulationHistoryComponent implements OnInit {
 
     this.simulationService.deleteCalculationResult(id).subscribe({
       next: () => {
-        this.loadHistory();
+        this.loadHistory(Math.max(this.currentPage - 1, 0));
       }
     });
   }
 
   nextPage(): void {
     if (this.currentPage < this.totalPages) {
-      this.currentPage++;
+      this.loadHistory(this.currentPage);
     }
   }
 
   previousPage(): void {
     if (this.currentPage > 1) {
-      this.currentPage--;
+      this.loadHistory(this.currentPage - 2);
     }
   }
 
   get paginatedItems(): SimulationHistoryItem[] {
-    const start = (this.currentPage - 1) * this.pageSize;
-    return this.filteredItems.slice(start, start + this.pageSize);
+    return this.filteredItems;
   }
 
   get totalPages(): number {
-    return Math.max(Math.ceil(this.filteredItems.length / this.pageSize), 1);
+    return this.backendTotalPages;
   }
 
   get showingFrom(): number {
-    if (!this.filteredItems.length) {
+    if (!this.totalElements || !this.filteredItems.length) {
       return 0;
     }
 
@@ -132,7 +132,11 @@ export class SimulationHistoryComponent implements OnInit {
   }
 
   get showingTo(): number {
-    return Math.min(this.currentPage * this.pageSize, this.filteredItems.length);
+    if (!this.filteredItems.length) {
+      return 0;
+    }
+
+    return this.showingFrom + this.filteredItems.length - 1;
   }
 
   get monthlyCount(): number {
@@ -175,26 +179,56 @@ export class SimulationHistoryComponent implements OnInit {
     }[status];
   }
 
-  private matchesDateRange(createdAtRaw: string, dateRange: DateRangeFilter): boolean {
+  private applyLocalFilters(): void {
+    const { search, status } = this.filterForm.getRawValue();
+    const normalizedSearch = search.trim().toLowerCase();
+
+    this.filteredItems = this.allItems.filter(item => {
+      const matchesSearch =
+        !normalizedSearch ||
+        String(item.id).includes(normalizedSearch) ||
+        String(item.vehiclePrice).includes(normalizedSearch) ||
+        String(item.tceaPercentage).includes(normalizedSearch) ||
+        String(item.monthlyPayment).includes(normalizedSearch);
+
+      const matchesStatus = status === 'ALL' || item.status === status;
+
+      return matchesSearch && matchesStatus;
+    });
+  }
+
+  private getDateRangeParams(dateRange: DateRangeFilter): {
+    createdFrom?: string;
+    createdTo?: string;
+  } {
     if (dateRange === 'ALL_TIME') {
-      return true;
+      return {};
     }
 
-    const createdAt = new Date(createdAtRaw);
     const now = new Date();
+    const createdTo = this.formatDateParam(now);
 
     if (dateRange === 'THIS_YEAR') {
-      return createdAt.getFullYear() === now.getFullYear();
+      return {
+        createdFrom: `${now.getFullYear()}-01-01`,
+        createdTo
+      };
     }
 
-    const days =
-      dateRange === 'LAST_30_DAYS'
-        ? 30
-        : 90;
+    const createdFrom = new Date(now);
+    createdFrom.setDate(now.getDate() - (dateRange === 'LAST_30_DAYS' ? 30 : 90));
 
-    const limit = new Date();
-    limit.setDate(now.getDate() - days);
+    return {
+      createdFrom: this.formatDateParam(createdFrom),
+      createdTo
+    };
+  }
 
-    return createdAt >= limit;
+  private formatDateParam(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
   }
 }

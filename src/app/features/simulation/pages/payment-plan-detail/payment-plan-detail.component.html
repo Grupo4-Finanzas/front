@@ -20,10 +20,20 @@
       Historial
     </a>
 
+    <a routerLink="/profile">
+      <span class="material-symbols-outlined">person</span>
+      Perfil
+    </a>
+
     <a routerLink="/help">
       <span class="material-symbols-outlined">help</span>
       Ayuda
     </a>
+
+    <button type="button" class="logout-button" (click)="logout()">
+      <span class="material-symbols-outlined">logout</span>
+      Cerrar sesiÃ³n
+    </button>
   </nav>
 </aside>
 
@@ -54,14 +64,14 @@
         </div>
 
         <div class="header-actions">
-          <button type="button">
+          <button type="button" [disabled]="isDownloadingPdf" (click)="downloadSchedulePdf()">
             <span class="material-symbols-outlined">description</span>
-            Exportar PDF
+            {{ isDownloadingPdf ? 'Exportando...' : 'Exportar PDF' }}
           </button>
 
-          <button type="button">
+          <button type="button" [disabled]="isDownloadingXlsx" (click)="downloadScheduleXlsx()">
             <span class="material-symbols-outlined">table_chart</span>
-            Exportar Excel
+            {{ isDownloadingXlsx ? 'Exportando...' : 'Exportar Excel' }}
           </button>
         </div>
       </section>
@@ -135,6 +145,7 @@
             <thead>
             <tr>
               <th>Mes</th>
+              <th>Fecha</th>
               <th class="right">Saldo Inicial</th>
               <th class="right">Interés</th>
               <th class="right">Amortización</th>
@@ -149,6 +160,10 @@
               @for (row of paginatedRows; track row.period) {
                 <tr>
                   <td class="period-cell">Mes {{ row.period }}</td>
+
+                  <td>
+                    {{ row.paymentDate ? (row.paymentDate | date:'dd MMM, yyyy') : '-' }}
+                  </td>
 
                   <td class="right">
                     {{ row.initialBalance | currency:currencyCode:'symbol':'1.2-2' }}
@@ -184,7 +199,7 @@
 
               @if (!paginatedRows.length) {
                 <tr>
-                  <td colspan="8" class="empty-cell">
+                  <td colspan="9" class="empty-cell">
                     No hay cuotas que coincidan con los filtros aplicados.
                   </td>
                 </tr>

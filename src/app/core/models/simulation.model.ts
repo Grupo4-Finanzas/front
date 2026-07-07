@@ -1,10 +1,29 @@
 export type CurrencyCode = 'PEN' | 'USD';
-export type RateType = 'TEA' | 'TEM';
+export type RateType = 'TEA' | 'TNA' | 'Efectiva' | 'Nominal';
 export type GraceType = 'NONE' | 'TOTAL' | 'PARTIAL';
-export type PaymentFrequency = 'MONTHLY' | 'BIMONTHLY' | 'QUARTERLY';
+export type PaymentFrequency = 'MONTHLY';
+export type CapitalizationFrequency =
+  | 'DAILY'
+  | 'BIWEEKLY'
+  | 'MONTHLY'
+  | 'BIMONTHLY'
+  | 'QUARTERLY'
+  | 'FOUR_MONTHLY'
+  | 'SEMIANNUAL'
+  | 'ANNUAL';
 export type SimulationViability = 'VIABLE' | 'NOT_VIABLE';
 export type PaymentStatus = 'COMPLETED' | 'NEXT' | 'PENDING';
 export type SimulationHistoryStatus = 'CALCULATED' | 'SAVED' | 'EXPIRED';
+
+export interface PageResponse<T> {
+  content: T[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  first: boolean;
+  last: boolean;
+}
 
 export interface SimulationRequest {
   id: number;
@@ -48,6 +67,7 @@ export interface InterestConfiguration {
   rateType: RateType;
   rateValuePercentage: number;
   paymentFrequency: PaymentFrequency;
+  capitalizationFrequency?: CapitalizationFrequency | null;
 }
 
 export interface GracePeriodConfiguration {
@@ -56,7 +76,7 @@ export interface GracePeriodConfiguration {
 }
 
 export interface FinancialAnalysisConfiguration {
-  targetTirPercentage: number;
+  cokAnnualPercentage: number;
 }
 
 export interface CostsConfiguration {
@@ -104,15 +124,7 @@ export interface BalanceEvolutionPoint {
 
 export interface PaymentScheduleRow {
   period: number;
-  amortization: number;
-  interest: number;
-  costs: number;
-  totalPayment: number;
-  finalBalance: number;
-}
-
-export interface PaymentScheduleRow {
-  period: number;
+  paymentDate?: string;
   initialBalance: number;
   amortization: number;
   interest: number;

@@ -20,10 +20,20 @@
       Historial
     </a>
 
+    <a routerLink="/profile">
+      <span class="material-symbols-outlined">person</span>
+      Perfil
+    </a>
+
     <a routerLink="/help">
       <span class="material-symbols-outlined">help</span>
       Ayuda
     </a>
+
+    <button type="button" class="logout-button" (click)="logout()">
+      <span class="material-symbols-outlined">logout</span>
+      Cerrar sesiÃ³n
+    </button>
   </nav>
 </aside>
 
@@ -150,14 +160,14 @@
                 id="initialFeePercentage"
                 type="range"
                 min="10"
-                max="50"
+                max="30"
                 formControlName="initialFeePercentage"
               />
 
               <div class="range-labels">
                 <span>10%</span>
                 <strong>{{ simulationForm.controls.initialFeePercentage.value }}%</strong>
-                <span>50%</span>
+                <span>30%</span>
               </div>
             </div>
 
@@ -165,10 +175,10 @@
               <label for="balloonFeePercentage">Cuota Balloon (%)</label>
 
               <select id="balloonFeePercentage" formControlName="balloonFeePercentage">
-                <option [ngValue]="0">0% (Sin Balloon)</option>
-                <option [ngValue]="10">10%</option>
-                <option [ngValue]="20">20%</option>
-                <option [ngValue]="30">30%</option>
+                <option [ngValue]="35">35%</option>
+                <option [ngValue]="40">40%</option>
+                <option [ngValue]="45">45%</option>
+                <option [ngValue]="50">50%</option>
               </select>
             </div>
 
@@ -176,11 +186,9 @@
               <label for="termMonths">Plazo (Meses)</label>
 
               <select id="termMonths" formControlName="termMonths">
-                <option [ngValue]="12">12 Meses</option>
                 <option [ngValue]="24">24 Meses</option>
                 <option [ngValue]="36">36 Meses</option>
                 <option [ngValue]="48">48 Meses</option>
-                <option [ngValue]="60">60 Meses</option>
               </select>
             </div>
           </div>
@@ -198,7 +206,7 @@
 
               <select id="rateType" formControlName="rateType">
                 <option value="TEA">TEA</option>
-                <option value="TEM">TEM</option>
+                <option value="TNA">TNA (Nominal)</option>
               </select>
             </div>
 
@@ -219,14 +227,33 @@
             </div>
 
             <div class="form-group full-column">
-              <label for="paymentFrequency">Frecuencia de Pago</label>
+              <label>Frecuencia de Pago</label>
+
+              <div class="readonly-box">
+                Mensual (30 dias)
+              </div>
 
               <select id="paymentFrequency" formControlName="paymentFrequency">
                 <option value="MONTHLY">Mensual (30 días)</option>
-                <option value="BIMONTHLY">Bimensual (60 días)</option>
-                <option value="QUARTERLY">Trimestral (90 días)</option>
               </select>
             </div>
+
+            @if (selectedRateType === 'TNA') {
+              <div class="form-group full-column">
+                <label for="capitalizationFrequency">Capitalizacion</label>
+
+                <select id="capitalizationFrequency" formControlName="capitalizationFrequency">
+                  <option value="DAILY">Diaria</option>
+                  <option value="BIWEEKLY">Quincenal</option>
+                  <option value="MONTHLY">Mensual</option>
+                  <option value="BIMONTHLY">Bimestral</option>
+                  <option value="QUARTERLY">Trimestral</option>
+                  <option value="FOUR_MONTHLY">Cuatrimestral</option>
+                  <option value="SEMIANNUAL">Semestral</option>
+                  <option value="ANNUAL">Anual</option>
+                </select>
+              </div>
+            }
           </div>
         </section>
 
@@ -284,33 +311,33 @@
         <section class="form-card full-row">
           <div class="section-title">
             <span class="material-symbols-outlined">analytics</span>
-            <h3>Análisis Financiero Proyectado</h3>
+            <h3>Analisis Financiero</h3>
           </div>
 
           <div class="two-columns">
             <div class="form-group">
-              <label for="targetTirPercentage">TIR Objetivo (%)</label>
+              <label for="cokAnnualPercentage">COK anual (%)</label>
 
               <input
-                id="targetTirPercentage"
+                id="cokAnnualPercentage"
                 type="range"
                 min="0"
                 max="100"
-                formControlName="targetTirPercentage"
+                formControlName="cokAnnualPercentage"
               />
 
               <div class="range-labels">
                 <span>0%</span>
-                <strong>{{ simulationForm.controls.targetTirPercentage.value }}%</strong>
+                <strong>{{ simulationForm.controls.cokAnnualPercentage.value }}%</strong>
                 <span>100%</span>
               </div>
             </div>
 
             <div class="form-group">
-              <label>VAN Proyectado</label>
+              <label>Nota</label>
 
               <div class="readonly-box">
-                Pendiente de cálculo
+                La COK se utilizará para calcular el VAN desde el punto de vista del deudor.
               </div>
             </div>
           </div>
@@ -414,3 +441,4 @@
     <span>Ayuda</span>
   </a>
 </nav>
+

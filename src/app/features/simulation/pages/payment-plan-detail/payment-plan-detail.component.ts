@@ -1,7 +1,9 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule, CurrencyPipe, DecimalPipe } from '@angular/common';
+import { CommonModule, CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { forkJoin, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 import {
   PaymentScheduleRow,
@@ -9,19 +11,23 @@ import {
   SimulationCalculationResponse
 } from '../../../../core/models/simulation.model';
 import { SimulationService } from '../../../../core/services/simulation.service';
+import { downloadBlobResponse } from '../../../../core/utils/download-blob';
+import { AuthService } from '../../../../core/services/auth.service';
 
 type PaymentStatusFilter = 'ALL' | PaymentStatus;
 
 @Component({
   selector: 'app-payment-plan-detail',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, CurrencyPipe, DecimalPipe],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, CurrencyPipe, DatePipe, DecimalPipe],
   templateUrl: './payment-plan-detail.component.html',
   styleUrl: './payment-plan-detail.component.css'
 })
 export class PaymentPlanDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly simulationService = inject(SimulationService);
+  private readonly authService = inject(AuthService);
   private readonly fb = inject(FormBuilder);
 
   calculation?: SimulationCalculationResponse | null;
@@ -32,6 +38,8 @@ export class PaymentPlanDetailComponent implements OnInit {
   filteredRows: PaymentScheduleRow[] = [];
   currentPage = 1;
   pageSize = 5;
+  isDownloadingPdf = false;
+  isDownloadingXlsx = false;
 
   filterForm = this.fb.nonNullable.group({
     fromMonth: [1],
@@ -48,7 +56,20 @@ export class PaymentPlanDetailComponent implements OnInit {
       return;
     }
 
-    this.simulationService.getCalculationResultById(id).subscribe({
+    forkJoin({
+      result: this.simulationService.getCalculationResultById(id),
+      schedule: this.simulationService.getPaymentSchedule(id).pipe(
+        catchError(() => of(null))
+      )
+    }).pipe(
+      map(({ result, schedule }) => ({
+        ...result,
+        results: {
+          ...result.results,
+          schedule: schedule ?? result.results.schedule
+        }
+      }))
+    ).subscribe({
       next: result => {
         this.calculation = result;
 
@@ -162,6 +183,49 @@ export class PaymentPlanDetailComponent implements OnInit {
       NEXT: 'status-next',
       PENDING: 'status-pending'
     }[status];
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigateByUrl('/auth');
+  }
+
+  downloadSchedulePdf(): void {
+    if (!this.calculation || this.isDownloadingPdf) {
+      return;
+    }
+
+    this.isDownloadingPdf = true;
+
+    this.simulationService.downloadSchedulePdf(this.calculation.id).subscribe({
+      next: response => {
+        downloadBlobResponse(response, `simulation-${this.calculation?.id}-schedule.pdf`);
+        this.isDownloadingPdf = false;
+      },
+      error: () => {
+        this.errorMessage = 'No se pudo exportar el cronograma en PDF.';
+        this.isDownloadingPdf = false;
+      }
+    });
+  }
+
+  downloadScheduleXlsx(): void {
+    if (!this.calculation || this.isDownloadingXlsx) {
+      return;
+    }
+
+    this.isDownloadingXlsx = true;
+
+    this.simulationService.downloadScheduleXlsx(this.calculation.id).subscribe({
+      next: response => {
+        downloadBlobResponse(response, `simulation-${this.calculation?.id}-schedule.xlsx`);
+        this.isDownloadingXlsx = false;
+      },
+      error: () => {
+        this.errorMessage = 'No se pudo exportar el cronograma en Excel.';
+        this.isDownloadingXlsx = false;
+      }
+    });
   }
 
   private normalizeMonth(value: number, fallback: number, maxMonth: number): number {

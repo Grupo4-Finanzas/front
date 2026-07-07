@@ -1,11 +1,10 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule, CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 
 import { AuthService } from '../../../../core/services/auth.service';
 import { DashboardService } from '../../../../core/services/dashboard.service';
-import { SimulationService } from '../../../../core/services/simulation.service';
 
 import { User } from '../../../../core/models/user.model';
 import { DashboardData } from '../../../../core/models/dashboard.model';
@@ -20,8 +19,8 @@ import { SimulationHistoryItem } from '../../../../core/models/simulation.model'
 })
 export class DashboardComponent implements OnInit {
   private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
   private readonly dashboardService = inject(DashboardService);
-  private readonly simulationService = inject(SimulationService);
 
   user?: User;
   dashboard?: DashboardData;
@@ -39,20 +38,24 @@ export class DashboardComponent implements OnInit {
     this.loadDashboard();
   }
 
+  logout(): void {
+    this.authService.logout();
+    this.router.navigateByUrl('/auth');
+  }
+
   private loadDashboard(): void {
     this.isLoading = true;
     this.errorMessage = '';
 
     forkJoin({
       user: this.authService.getCurrentUser$(),
-      dashboard: this.dashboardService.getDashboardData(),
-      simulationHistory: this.simulationService.getSimulationHistory()
+      dashboard: this.dashboardService.getDashboardData()
     }).subscribe({
-      next: ({ user, dashboard, simulationHistory }) => {
+      next: ({ user, dashboard }) => {
         this.user = user;
         this.dashboard = dashboard;
 
-        this.recentSimulations = simulationHistory.slice(0, 5);
+        this.recentSimulations = dashboard.simulations.slice(0, 5);
 
         this.isLoading = false;
       },

@@ -1,11 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { AuthService } from '../../../../core/services/auth.service';
 
-type AuthTab = 'login' | 'register';
+type AuthTab = 'login' | 'register' | 'forgot' | 'reset';
 
 @Component({
   selector: 'app-auth',
@@ -16,6 +16,7 @@ type AuthTab = 'login' | 'register';
 })
 export class AuthComponent {
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
 
@@ -36,6 +37,24 @@ export class AuthComponent {
     confirmPassword: ['', [Validators.required]],
     acceptedPrivacy: [false, [Validators.requiredTrue]]
   });
+
+  forgotPasswordForm = this.fb.nonNullable.group({
+    email: ['', [Validators.required, Validators.email]]
+  });
+
+  resetPasswordForm = this.fb.nonNullable.group({
+    token: ['', [Validators.required]],
+    newPassword: ['', [Validators.required, Validators.minLength(8)]],
+    confirmPassword: ['', [Validators.required]]
+  });
+
+  constructor() {
+    const mode = this.route.snapshot.data['mode'] as AuthTab | undefined;
+
+    if (mode) {
+      this.activeTab = mode;
+    }
+  }
 
   switchTab(tab: AuthTab): void {
     this.activeTab = tab;
@@ -97,6 +116,75 @@ export class AuthComponent {
     });
   }
 
+  submitForgotPassword(): void {
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    if (this.forgotPasswordForm.invalid) {
+      this.forgotPasswordForm.markAllAsTouched();
+      return;
+    }
+
+    this.isSubmitting = true;
+
+    this.authService.forgotPassword(this.forgotPasswordForm.getRawValue()).subscribe({
+      next: response => {
+        this.isSubmitting = false;
+        this.successMessage = response.resetToken
+          ? `Token generado: ${response.resetToken}`
+          : response.message || 'Revisa tu correo para continuar.';
+
+        if (response.resetToken) {
+          this.resetPasswordForm.controls.token.setValue(response.resetToken);
+        }
+
+        this.activeTab = 'reset';
+      },
+      error: err => {
+        this.isSubmitting = false;
+        this.errorMessage =
+          err?.error?.message || 'No se pudo generar el token de recuperacion.';
+      }
+    });
+  }
+
+  submitResetPassword(): void {
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    if (this.resetPasswordForm.invalid) {
+      this.resetPasswordForm.markAllAsTouched();
+      return;
+    }
+
+    const value = this.resetPasswordForm.getRawValue();
+
+    if (value.newPassword !== value.confirmPassword) {
+      this.errorMessage = 'Las contrasenas no coinciden.';
+      return;
+    }
+
+    this.isSubmitting = true;
+
+    this.authService.resetPassword(value).subscribe({
+      next: () => {
+        this.isSubmitting = false;
+        this.successMessage = 'Contrasena restablecida. Ya puedes iniciar sesion.';
+        this.resetPasswordForm.reset({
+          token: '',
+          newPassword: '',
+          confirmPassword: ''
+        });
+        this.activeTab = 'login';
+      },
+      error: err => {
+        this.isSubmitting = false;
+        this.errorMessage =
+          err?.error?.message || 'No se pudo restablecer la contrasena.';
+      }
+    });
+  }
+
   hasLoginError(field: 'email' | 'password'): boolean {
     const control = this.loginForm.controls[field];
     return control.invalid && control.touched;
@@ -106,6 +194,16 @@ export class AuthComponent {
     field: 'fullName' | 'email' | 'password' | 'confirmPassword' | 'acceptedPrivacy'
   ): boolean {
     const control = this.registerForm.controls[field];
+    return control.invalid && control.touched;
+  }
+
+  hasForgotError(field: 'email'): boolean {
+    const control = this.forgotPasswordForm.controls[field];
+    return control.invalid && control.touched;
+  }
+
+  hasResetError(field: 'token' | 'newPassword' | 'confirmPassword'): boolean {
+    const control = this.resetPasswordForm.controls[field];
     return control.invalid && control.touched;
   }
 }
