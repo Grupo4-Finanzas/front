@@ -100,6 +100,7 @@ export interface SimulationResults {
   initialCapital: number;
   termMonths: number;
   effectiveRatePercentage: number;
+  temPercentage: number;
 
   tceaPercentage: number;
   van: number;

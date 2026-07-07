@@ -171,12 +171,19 @@ small {
   transition: 0.2s ease;
 }
 
-.primary-button:hover {
+.primary-button:hover:not(:disabled) {
   background: #4338ca;
 }
 
-.primary-button:active {
+.primary-button:active:not(:disabled) {
   transform: scale(0.98);
+}
+
+.primary-button:disabled {
+  background: #a5b4fc;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
 }
 
 .divider {

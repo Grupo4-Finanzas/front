@@ -27,7 +27,7 @@ export class AuthComponent {
 
   loginForm = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required]]
+    password: ['', [Validators.required, Validators.minLength(8)]]
   });
 
   registerForm = this.fb.nonNullable.group({
@@ -78,9 +78,10 @@ export class AuthComponent {
         this.isSubmitting = false;
         this.router.navigateByUrl('/dashboard');
       },
-      error: () => {
+      error: (err) => {
         this.isSubmitting = false;
-        this.errorMessage = 'Correo o contraseña incorrectos.';
+        const backendMessage = err?.error?.message;
+        this.errorMessage = backendMessage || 'Correo o contraseña incorrectos.';
       }
     });
   }
