@@ -59,7 +59,7 @@
 
           <p>
             Detalle mensual del crédito para
-            {{ calculation.input.client.fullName }}.
+            {{ calculation.input.client?.fullName || 'el cliente autenticado' }}.
           </p>
         </div>
 
@@ -87,7 +87,7 @@
         <article>
           <span>Tasa Anual</span>
           <strong>
-            {{ calculation.results.effectiveRatePercentage | number:'1.2-2' }}%
+            {{ calculation.results.effectiveRatePercentage | number:'1.4-4' }}%
           </strong>
         </article>
 

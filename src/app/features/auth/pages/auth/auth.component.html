@@ -95,6 +95,23 @@
       @if (activeTab === 'register') {
         <form class="form" [formGroup]="registerForm" (ngSubmit)="submitRegister()">
           <div class="form-group">
+            <label for="reg-document">DNI</label>
+
+            <input
+              id="reg-document"
+              type="text"
+              formControlName="documentNumber"
+              placeholder="12345678"
+              inputmode="numeric"
+              maxlength="8"
+            />
+
+            @if (hasRegisterError('documentNumber')) {
+              <small>Ingresa un DNI valido de 8 digitos.</small>
+            }
+          </div>
+
+          <div class="form-group">
             <label for="reg-name">Nombre completo</label>
 
             <input

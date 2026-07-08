@@ -25,6 +25,7 @@ export class ProfileComponent implements OnInit {
   passwordVisible = false;
 
   profileForm = this.fb.nonNullable.group({
+    documentNumber: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
     fullName: ['', [Validators.required, Validators.maxLength(100)]],
     currentPassword: [''],
     newPassword: [''],
@@ -37,6 +38,7 @@ export class ProfileComponent implements OnInit {
       next: user => {
         this.user = user;
         this.profileForm.patchValue({
+          documentNumber: user.documentNumber,
           fullName: user.fullName,
           currentPassword: '',
           newPassword: '',
@@ -59,7 +61,7 @@ export class ProfileComponent implements OnInit {
       return;
     }
 
-    const { fullName, currentPassword, newPassword, confirmPassword } =
+    const { documentNumber, fullName, currentPassword, newPassword, confirmPassword } =
       this.profileForm.getRawValue();
     const shouldChangePassword = !!currentPassword || !!newPassword || !!confirmPassword;
 
@@ -75,7 +77,7 @@ export class ProfileComponent implements OnInit {
 
     this.isSubmittingProfile = true;
 
-    this.authService.updateProfile({ fullName }).subscribe({
+    this.authService.updateProfile({ documentNumber, fullName }).subscribe({
       next: user => {
         this.user = user;
 

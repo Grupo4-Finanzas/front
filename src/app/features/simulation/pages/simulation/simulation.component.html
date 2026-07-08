@@ -62,35 +62,22 @@
           <div class="section-title">
             <span class="material-symbols-outlined">person</span>
             <h3>Datos del Cliente</h3>
+            <span class="material-symbols-outlined tooltip-icon" title="Identifica al deudor asociado a la simulacion y a su historial.">help</span>
           </div>
 
           <div class="two-columns">
             <div class="form-group">
-              <label for="documentNumber">DNI / RUC</label>
-              <input
-                id="documentNumber"
-                type="text"
-                formControlName="documentNumber"
-                placeholder="Ingrese documento"
-              />
-
-              @if (hasError('documentNumber')) {
-                <small>El documento es obligatorio.</small>
-              }
+              <label>DNI</label>
+              <div class="readonly-box">
+                {{ currentUser?.documentNumber || 'No registrado' }}
+              </div>
             </div>
 
             <div class="form-group">
-              <label for="fullName">Nombre Completo</label>
-              <input
-                id="fullName"
-                type="text"
-                formControlName="fullName"
-                placeholder="Juan Pérez"
-              />
-
-              @if (hasError('fullName')) {
-                <small>El nombre completo es obligatorio.</small>
-              }
+              <label>Nombre Completo</label>
+              <div class="readonly-box">
+                {{ currentUser?.fullName || 'No registrado' }}
+              </div>
             </div>
           </div>
         </section>
@@ -99,6 +86,7 @@
           <div>
             <div class="section-title">
               <span class="material-symbols-outlined">directions_car</span>
+              <span class="material-symbols-outlined tooltip-icon" title="Define el valor base usado para calcular el credito solicitado.">help</span>
               <h3>Vehículo</h3>
             </div>
 
@@ -149,6 +137,7 @@
         <section class="form-card full-row">
           <div class="section-title">
             <span class="material-symbols-outlined">tune</span>
+            <span class="material-symbols-outlined tooltip-icon" title="Establece la cuota inicial, la cuota balon y el plazo del financiamiento.">help</span>
             <h3>Configuración del Crédito</h3>
           </div>
 
@@ -172,7 +161,7 @@
             </div>
 
             <div class="form-group">
-              <label for="balloonFeePercentage">Cuota Balloon (%)</label>
+              <label for="balloonFeePercentage">Cuota balon (%)</label>
 
               <select id="balloonFeePercentage" formControlName="balloonFeePercentage">
                 <option [ngValue]="35">35%</option>
@@ -197,6 +186,7 @@
         <section class="form-card half-row">
           <div class="section-title">
             <span class="material-symbols-outlined">percent</span>
+            <span class="material-symbols-outlined tooltip-icon" title="Configura la tasa que se aplicara al saldo del credito.">help</span>
             <h3>Tasas de Interés</h3>
           </div>
 
@@ -243,14 +233,14 @@
                 <label for="capitalizationFrequency">Capitalizacion</label>
 
                 <select id="capitalizationFrequency" formControlName="capitalizationFrequency">
-                  <option value="DAILY">Diaria</option>
-                  <option value="BIWEEKLY">Quincenal</option>
-                  <option value="MONTHLY">Mensual</option>
-                  <option value="BIMONTHLY">Bimestral</option>
-                  <option value="QUARTERLY">Trimestral</option>
-                  <option value="FOUR_MONTHLY">Cuatrimestral</option>
-                  <option value="SEMIANNUAL">Semestral</option>
-                  <option value="ANNUAL">Anual</option>
+                  <option value="Diaria">Diaria</option>
+                  <option value="Quincenal">Quincenal</option>
+                  <option value="Mensual">Mensual</option>
+                  <option value="Bimestral">Bimestral</option>
+                  <option value="Trimestral">Trimestral</option>
+                  <option value="Cuatrimestral">Cuatrimestral</option>
+                  <option value="Semestral">Semestral</option>
+                  <option value="Anual">Anual</option>
                 </select>
               </div>
             }
@@ -260,6 +250,7 @@
         <section class="form-card half-row">
           <div class="section-title">
             <span class="material-symbols-outlined">calendar_today</span>
+            <span class="material-symbols-outlined tooltip-icon" title="Define como seran los primeros pagos del deudor.">help</span>
             <h3>Periodo de Gracia</h3>
           </div>
 
@@ -311,6 +302,7 @@
         <section class="form-card full-row">
           <div class="section-title">
             <span class="material-symbols-outlined">analytics</span>
+            <span class="material-symbols-outlined tooltip-icon" title="Permite ingresar la COK para calcular el VAN desde el punto de vista del deudor.">help</span>
             <h3>Analisis Financiero</h3>
           </div>
 
@@ -328,7 +320,7 @@
 
               <div class="range-labels">
                 <span>0%</span>
-                <strong>{{ simulationForm.controls.cokAnnualPercentage.value }}%</strong>
+                <strong>{{ simulationForm.controls.cokAnnualPercentage.value | number:'1.4-4' }}%</strong>
                 <span>100%</span>
               </div>
             </div>
@@ -346,6 +338,7 @@
         <section class="form-card full-row">
           <div class="section-title">
             <span class="material-symbols-outlined">payments</span>
+            <span class="material-symbols-outlined tooltip-icon" title="Incluye los costos adicionales que asumira el deudor durante el credito.">help</span>
             <h3>Costos y Seguros</h3>
           </div>
 
@@ -384,7 +377,7 @@
               <div class="cost-item">
                 <div>
                   <strong>Seguro Vehicular</strong>
-                  <span>Tasa anual sobre valor comercial</span>
+                  <span>Tasa anual sobre precio del vehículo</span>
                 </div>
 
                 <input
@@ -394,24 +387,24 @@
                   placeholder="3.50"
                 />
               </div>
-
-              <div class="note-box">
-                <div>
-                  <span class="material-symbols-outlined">info</span>
-                  <strong>Nota de Simulación</strong>
-                </div>
-
-                <p>
-                  Los valores ingresados se guardarán para realizar el cálculo financiero en la siguiente etapa.
-                </p>
-              </div>
             </div>
           </div>
+        </section>
+
+        <section class="form-card full-row note-box simulation-note">
+          <div>
+            <span class="material-symbols-outlined">info</span>
+            <strong>Nota de SimulaciÃ³n</strong>
+          </div>
+
+          <p>
+            Los valores ingresados se utilizarÃ¡n para calcular y guardar la simulaciÃ³n financiera.
+          </p>
         </section>
       </div>
 
       <div class="action-row">
-        <button class="primary-button" type="submit">
+        <button class="primary-button" type="submit" title="Calcula, guarda y asocia la simulacion al historial del cliente.">
           <span>Calcular Simulación</span>
           <span class="material-symbols-outlined">arrow_forward</span>
         </button>

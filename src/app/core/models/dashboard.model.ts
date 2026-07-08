@@ -11,6 +11,7 @@ export interface SimulationSummary {
   van: number;
   monthlyPayment: number;
   termMonths: number;
+  currency?: 'PEN' | 'USD';
 }
 
 export interface RecommendedVehicle {

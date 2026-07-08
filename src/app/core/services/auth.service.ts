@@ -58,7 +58,7 @@ export class AuthService {
     );
   }
 
-  updateProfile(payload: { fullName: string }): Observable<User> {
+  updateProfile(payload: { documentNumber: string; fullName: string }): Observable<User> {
     return this.http.patch<User>(`${environment.apiUrl}/auth/me`, payload).pipe(
       tap(user => localStorage.setItem(this.sessionKey, JSON.stringify(user)))
     );

@@ -1,5 +1,6 @@
 export interface User {
   id: number;
+  documentNumber: string;
   firstName: string;
   fullName: string;
   email: string;
@@ -12,6 +13,7 @@ export interface LoginRequest {
 }
 
 export interface RegisterRequest {
+  documentNumber: string;
   fullName: string;
   email: string;
   password: string;

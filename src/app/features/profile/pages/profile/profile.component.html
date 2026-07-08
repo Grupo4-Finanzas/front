@@ -52,6 +52,17 @@
 
     <form class="profile-form" [formGroup]="profileForm" (ngSubmit)="submitProfile()">
       <div class="form-field">
+        <label for="documentNumber">DNI</label>
+        <input
+          id="documentNumber"
+          type="text"
+          formControlName="documentNumber"
+          inputmode="numeric"
+          maxlength="8"
+        />
+      </div>
+
+      <div class="form-field">
         <label for="fullName">Nombre completo</label>
         <input id="fullName" type="text" formControlName="fullName" />
       </div>

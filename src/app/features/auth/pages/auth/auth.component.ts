@@ -31,6 +31,7 @@ export class AuthComponent {
   });
 
   registerForm = this.fb.nonNullable.group({
+    documentNumber: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
     fullName: ['', [Validators.required, Validators.minLength(3)]],
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(8)]],
@@ -192,7 +193,13 @@ export class AuthComponent {
   }
 
   hasRegisterError(
-    field: 'fullName' | 'email' | 'password' | 'confirmPassword' | 'acceptedPrivacy'
+    field:
+      | 'documentNumber'
+      | 'fullName'
+      | 'email'
+      | 'password'
+      | 'confirmPassword'
+      | 'acceptedPrivacy'
   ): boolean {
     const control = this.registerForm.controls[field];
     return control.invalid && control.touched;

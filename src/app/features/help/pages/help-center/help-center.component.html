@@ -41,6 +41,10 @@
   <section class="help-content" aria-labelledby="help-title">
     <div class="help-heading">
       <h1 id="help-title">Centro de Ayuda</h1>
+      <p>
+        Encuentra respuestas sobre el uso del simulador, calculo de cuotas,
+        indicadores financieros y condiciones del credito vehicular inteligente.
+      </p>
 
       <div class="search-box">
         <span class="material-symbols-outlined" aria-hidden="true">search</span>
@@ -53,6 +57,18 @@
           aria-label="Buscar preguntas frecuentes"
         />
       </div>
+    </div>
+
+    <div class="category-tabs" aria-label="Categorias de preguntas frecuentes">
+      @for (category of categories; track category) {
+        <button
+          type="button"
+          [class.active]="selectedCategory === category"
+          (click)="selectCategory(category)"
+        >
+          {{ category }}
+        </button>
+      }
     </div>
 
     <div class="faq-list">

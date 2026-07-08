@@ -162,6 +162,21 @@
   color: #4f46e5;
 }
 
+.section-title > span:not(.tooltip-icon) {
+  order: 1;
+}
+
+.section-title h3 {
+  order: 2;
+}
+
+.section-title .tooltip-icon {
+  order: 3;
+  color: #6b7280;
+  cursor: help;
+  font-size: 18px;
+}
+
 .section-title h3 {
   margin: 0;
   color: #111827;
@@ -358,6 +373,10 @@ small {
   border: 1px solid rgba(79, 70, 229, 0.18);
   border-radius: 8px;
   padding: 16px;
+}
+
+.simulation-note {
+  grid-column: span 12;
 }
 
 .note-box div {

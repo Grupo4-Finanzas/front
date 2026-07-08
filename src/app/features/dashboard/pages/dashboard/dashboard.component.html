@@ -75,7 +75,7 @@
 
           <div>
             <strong class="summary-value primary">
-              {{ dashboard.summary.tcea | number:'1.1-1' }}%
+              {{ dashboard.summary.tcea | number:'1.4-4' }}%
             </strong>
 
             <p>Tasa de Costo Efectivo Anual</p>
@@ -87,7 +87,7 @@
 
           <div>
             <strong class="summary-value">
-              {{ dashboard.summary.van | currency:'USD':'symbol':'1.0-0' }}
+              {{ dashboard.summary.van | currency:summaryCurrency:'symbol':'1.0-0' }}
             </strong>
 
             <p>Valor Actual Neto proyectado</p>
@@ -99,7 +99,7 @@
 
           <div>
             <strong class="summary-value">
-              {{ dashboard.summary.monthlyPayment | currency:'USD':'symbol':'1.2-2' }}
+              {{ dashboard.summary.monthlyPayment | currency:summaryCurrency:'symbol':'1.2-2' }}
             </strong>
 
             <p>Cuota fija estimada a {{ dashboard.summary.termMonths }} meses</p>
@@ -142,7 +142,7 @@
                   </td>
 
                   <td class="primary-cell">
-                    {{ simulation.tceaPercentage | number:'1.2-2' }}%
+                    {{ simulation.tceaPercentage | number:'1.4-4' }}%
                   </td>
 
                   <td class="right">

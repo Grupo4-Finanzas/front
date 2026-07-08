@@ -34,6 +34,10 @@ export class DashboardComponent implements OnInit {
     return this.user?.firstName || this.user?.fullName?.split(' ')[0] || 'Usuario';
   }
 
+  get summaryCurrency(): string {
+    return this.dashboard?.summary.currency || this.recentSimulations[0]?.currency || 'PEN';
+  }
+
   ngOnInit(): void {
     this.loadDashboard();
   }

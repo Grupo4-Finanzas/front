@@ -11,6 +11,7 @@ import {
 } from '../../../../core/models/simulation.model';
 import { SimulationService } from '../../../../core/services/simulation.service';
 import { AuthService } from '../../../../core/services/auth.service';
+import { User } from '../../../../core/models/user.model';
 
 @Component({
   selector: 'app-simulation',
@@ -28,11 +29,9 @@ export class SimulationComponent implements OnInit {
   successMessage = '';
   errorMessage = '';
   isSubmitting = false;
+  currentUser?: User;
 
   simulationForm = this.fb.nonNullable.group({
-    documentNumber: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
-    fullName: ['', [Validators.required, Validators.maxLength(100)]],
-
     currency: ['PEN' as CurrencyCode, [Validators.required]],
     vehiclePrice: [0, [Validators.required, Validators.min(1)]],
 
@@ -43,7 +42,7 @@ export class SimulationComponent implements OnInit {
     rateType: ['TEA', [Validators.required]],
     rateValuePercentage: [12.5, [Validators.required, Validators.min(0.0000001)]],
     paymentFrequency: ['MONTHLY', [Validators.required]],
-    capitalizationFrequency: ['MONTHLY'],
+    capitalizationFrequency: ['Mensual'],
 
     graceType: ['NONE' as GraceType, [Validators.required]],
     graceMonths: [0, [Validators.required, Validators.min(0), Validators.max(6)]],
@@ -57,8 +56,6 @@ export class SimulationComponent implements OnInit {
 
   ngOnInit(): void {
     this.simulationForm.reset({
-      documentNumber: '',
-      fullName: '',
       currency: 'PEN',
       vehiclePrice: 0,
       initialFeePercentage: 20,
@@ -67,13 +64,22 @@ export class SimulationComponent implements OnInit {
       rateType: 'TEA',
       rateValuePercentage: 12.5,
       paymentFrequency: 'MONTHLY',
-      capitalizationFrequency: 'MONTHLY',
+      capitalizationFrequency: 'Mensual',
       graceType: 'NONE',
       graceMonths: 0,
       cokAnnualPercentage: 15,
       lifeInsuranceMonthlyRatePercentage: 0,
       administrativeExpenses: 0,
       vehicleInsuranceAnnualRatePercentage: 0
+    });
+
+    this.authService.getCurrentUser$().subscribe({
+      next: user => {
+        this.currentUser = user;
+      },
+      error: () => {
+        this.router.navigateByUrl('/auth');
+      }
     });
   }
 
@@ -107,10 +113,6 @@ export class SimulationComponent implements OnInit {
     const formValue = this.simulationForm.getRawValue();
 
     const draft: SimulationDraft = {
-      client: {
-        documentNumber: formValue.documentNumber,
-        fullName: formValue.fullName
-      },
       vehicle: {
         currency: formValue.currency,
         vehiclePrice: Number(formValue.vehiclePrice)

@@ -81,9 +81,15 @@
 
     <section class="bento-grid">
       <article class="main-result-card">
-        <p class="eyebrow">Cuota Mensual Estimada</p>
+        <p
+          class="eyebrow"
+          title="Monto referencial que pagara el deudor en los periodos ordinarios, incluyendo seguros y gastos."
+        >Pago Mensual Estimado</p>
 
-        <div class="monthly-payment">
+        <div
+          class="monthly-payment"
+          title="Monto referencial que pagara el deudor en los periodos ordinarios, incluyendo seguros y gastos."
+        >
           <span>
             {{ calculation.results.monthlyPayment | currency:currencyCode:'symbol':'1.2-2' }}
           </span>
@@ -94,26 +100,41 @@
         </div>
 
         <p class="description">
-          {{ calculation.results.includedCostsDescription }}
+          Incluye cuota ordinaria, seguro de desgravamen, seguro vehicular y gastos administrativos.
         </p>
 
         <div class="mini-metrics">
           <div>
-            <p>Capital Inicial</p>
-            <strong>
+            <p title="Capital del credito que recibe el deudor luego de descontar la cuota inicial.">Monto Financiado</p>
+            <strong title="Capital del credito que recibe el deudor luego de descontar la cuota inicial.">
               {{ calculation.results.initialCapital | currency:currencyCode:'symbol':'1.2-2' }}
             </strong>
           </div>
 
           <div>
-            <p>Plazo Total</p>
-            <strong>{{ calculation.results.termMonths }} Meses</strong>
+            <p title="Cantidad total de meses en los que el deudor pagara el financiamiento.">Plazo Total</p>
+            <strong title="Cantidad total de meses en los que el deudor pagara el financiamiento.">{{ calculation.results.termMonths }} Meses</strong>
           </div>
 
           <div>
-            <p>Tasa Efectiva</p>
-            <strong>
-              {{ calculation.results.effectiveRatePercentage | number:'1.2-2' }}%
+            <p title="Porcentaje del valor del vehiculo que se difiere para el ultimo pago.">Cuota Balón</p>
+            <strong title="Porcentaje del valor del vehiculo que se difiere para el ultimo pago.">
+              {{ calculation.input.credit.balloonFeePercentage | number:'1.2-2' }}%
+            </strong>
+          </div>
+
+          <div>
+            <p title="Monto extraordinario que el deudor debera pagar al final del credito.">Valor Cuota Balón</p>
+            <strong title="Monto extraordinario que el deudor debera pagar al final del credito.">
+              {{ calculation.input.vehicle.currency }}
+              {{ calculation.results.balloonPaymentAmount | number:'1.2-2' }}
+            </strong>
+          </div>
+
+          <div>
+            <p title="Tasa anual usada para calcular los intereses del credito.">Tasa Efectiva</p>
+            <strong title="Tasa anual usada para calcular los intereses del credito.">
+              {{ calculation.results.effectiveRatePercentage | number:'1.4-4' }}%
             </strong>
           </div>
         </div>
@@ -122,12 +143,12 @@
       <section class="metrics-column">
         <article class="metric-card">
           <div class="metric-header">
-            <p>TCEA</p>
-            <span class="material-symbols-outlined">info</span>
+            <p title="Costo total anual del credito para el deudor.">TCEA</p>
+            <span class="material-symbols-outlined tooltip-icon" title="Costo total anual del credito para el deudor.">help</span>
           </div>
 
-          <strong>
-            {{ calculation.results.tceaPercentage | number:'1.2-2' }}%
+          <strong title="Costo total anual del credito para el deudor.">
+            {{ calculation.results.tceaPercentage | number:'1.4-4' }}%
           </strong>
 
           <small>Tasa de Costo Efectivo Anual</small>
@@ -135,13 +156,13 @@
 
         <article class="metric-card viability">
           <div class="metric-header">
-            <p>VAN</p>
+            <p title="Valor presente de los flujos del credito descontados con la COK del deudor.">VAN</p>
             <span class="tag">
               {{ viabilityLabel }}
             </span>
           </div>
 
-          <strong>
+          <strong title="Valor presente de los flujos del credito descontados con la COK del deudor.">
             {{ calculation.results.van | currency:currencyCode:'symbol':'1.2-2' }}
           </strong>
 
@@ -150,45 +171,71 @@
 
         <article class="metric-card">
           <div class="metric-header">
-            <p>TIR</p>
-            <span class="material-symbols-outlined">trending_up</span>
+            <p title="Tasa implicita que representa el costo financiero del credito para el deudor.">TIR</p>
+            <span class="material-symbols-outlined tooltip-icon" title="Tasa implicita que representa el costo financiero del credito para el deudor.">help</span>
           </div>
 
-          <strong>
-            {{ calculation.results.tirPercentage | number:'1.2-2' }}%
+          <strong title="Tasa implicita que representa el costo financiero del credito para el deudor.">
+            {{ calculation.results.tirPercentage | number:'1.4-4' }}%
           </strong>
 
           <small>Tasa Interna de Retorno</small>
-
-          <a routerLink="/simulation" class="adjust-link">
-            <span class="material-symbols-outlined">tune</span>
-            Ajustar TIR
-          </a>
         </article>
       </section>
 
       <article class="chart-card">
-        <h3>Interés vs. Amortización</h3>
+        <h3>
+          Composicion de cuota en periodos clave
+          <span class="material-symbols-outlined tooltip-icon" title="Muestra como cambia la composicion del pago del deudor durante el credito.">help</span>
+        </h3>
 
-        <div class="bar-chart">
-          @for (item of calculation.results.interestAmortizationChart; track item.period) {
-            <div class="bar-group">
-              <div
-                class="bar interest"
-                [style.height.%]="item.interestPercentage"
-              ></div>
+        <div class="composition-chart">
+          @for (item of keyPaymentComposition; track item.period) {
+            <div class="composition-item" [class.final-payment]="item.isFinal">
+              <div class="stacked-bar" [attr.aria-label]="item.label">
+                @if (item.balloonHeight > 0) {
+                  <div
+                    class="bar-segment balloon"
+                    [style.height.%]="item.balloonHeight"
+                    title="Cuota balon"
+                  ></div>
+                }
 
-              <div
-                class="bar capital"
-                [style.height.%]="item.capitalPercentage"
-              ></div>
+                @if (item.costsHeight > 0) {
+                  <div
+                    class="bar-segment costs"
+                    [style.height.%]="item.costsHeight"
+                    title="Seguros y gastos"
+                  ></div>
+                }
+
+                @if (item.amortizationHeight > 0) {
+                  <div
+                    class="bar-segment amortization"
+                    [style.height.%]="item.amortizationHeight"
+                    title="Amortizacion ordinaria"
+                  ></div>
+                }
+
+                @if (item.interestHeight > 0) {
+                  <div
+                    class="bar-segment interest"
+                    [style.height.%]="item.interestHeight"
+                    title="Interes"
+                  ></div>
+                }
+              </div>
+
+              <strong>
+                {{ item.total | currency:currencyCode:'symbol':'1.2-2' }}
+              </strong>
+
+              <span>{{ item.label }}</span>
             </div>
           }
         </div>
 
         <div class="chart-footer">
-          <span>Inicio</span>
-
           <div class="legend">
             <span>
               <i class="legend-interest"></i>
@@ -196,17 +243,28 @@
             </span>
 
             <span>
-              <i class="legend-capital"></i>
-              Capital
+              <i class="legend-amortization"></i>
+              Amortización ordinaria
+            </span>
+
+            <span>
+              <i class="legend-costs"></i>
+              Seguros/Gastos
+            </span>
+
+            <span>
+              <i class="legend-balloon"></i>
+              Cuota balón
             </span>
           </div>
-
-          <span>Fin</span>
         </div>
       </article>
 
       <article class="chart-card">
-        <h3>Evolución de Saldo Pendiente</h3>
+        <h3>
+          Evolución de Saldo Pendiente
+          <span class="material-symbols-outlined tooltip-icon" title="Muestra como disminuye la deuda pendiente hasta llegar a cero.">help</span>
+        </h3>
 
         <div class="balance-card">
           @for (point of calculation.results.balanceEvolution; track point.period) {
@@ -232,7 +290,10 @@
 
       <article class="schedule-card">
         <div class="schedule-header">
-          <h3>Cronograma Resumido</h3>
+          <h3>
+            Cronograma Resumido
+            <span class="material-symbols-outlined tooltip-icon" title="Resume los pagos mas relevantes del credito, incluyendo el pago final con cuota balon.">help</span>
+          </h3>
 
           <a
             class="detail-button"

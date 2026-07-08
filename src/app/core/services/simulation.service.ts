@@ -107,7 +107,7 @@ export class SimulationService {
             : this.buildInterestAmortizationChart(schedule),
         balanceEvolution:
           response.results.balanceEvolution?.length
-            ? response.results.balanceEvolution
+            ? this.normalizeBalanceEvolution(response.results.balanceEvolution)
             : this.buildBalanceEvolution(schedule),
         schedule
       }
@@ -149,5 +149,18 @@ export class SimulationService {
       period: row.period,
       balance: row.finalBalance
     }));
+  }
+
+  private normalizeBalanceEvolution(
+    points: SimulationCalculationResponse['results']['balanceEvolution']
+  ): SimulationCalculationResponse['results']['balanceEvolution'] {
+    const latestPointByPeriod = new Map<number, { period: number; balance: number }>();
+
+    for (const point of points) {
+      latestPointByPeriod.set(point.period, point);
+    }
+
+    return Array.from(latestPointByPeriod.values())
+      .sort((first, second) => first.period - second.period);
   }
 }

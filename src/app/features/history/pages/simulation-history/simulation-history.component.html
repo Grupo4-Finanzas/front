@@ -116,13 +116,11 @@
                     <strong>
                       {{ item.vehiclePrice | currency:item.currency:'symbol':'1.2-2' }}
                     </strong>
-
-                    <span>ID: #{{ item.id }}</span>
                   </div>
                 </td>
 
                 <td>
-                  {{ item.tceaPercentage | number:'1.2-2' }}%
+                  {{ item.tceaPercentage | number:'1.4-4' }}%
                 </td>
 
                 <td>
@@ -206,7 +204,7 @@
           <p>
             Tu simulación más reciente fue por
             {{ latestSimulation.vehiclePrice | currency:latestSimulation.currency:'symbol':'1.2-2' }}
-            con una TCEA de {{ latestSimulation.tceaPercentage | number:'1.2-2' }}%.
+            con una TCEA de {{ latestSimulation.tceaPercentage | number:'1.4-4' }}%.
           </p>
         } @else {
           <p>
@@ -229,7 +227,7 @@
         <p>
           Has realizado {{ monthlyCount }} simulación(es) este mes.
           La TCEA promedio de tus simulaciones es
-          {{ averageTcea | number:'1.2-2' }}%.
+          {{ averageTcea | number:'1.4-4' }}%.
         </p>
       </article>
     </section>
