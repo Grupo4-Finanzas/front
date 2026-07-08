@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://finanzas-backend-6l3p.onrender.com'
+  apiUrl: 'https://finanzas-backend-6l3p.onrender.com/api/v1'
 };
