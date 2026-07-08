@@ -210,6 +210,14 @@
 .full-column {
   grid-column: span 2;
 }
+.financial-analysis-grid {
+  grid-template-columns: minmax(280px, 520px);
+  justify-content: center;
+}
+
+.cok-range-group {
+  width: 100%;
+}
 
 .form-group {
   display: flex;
@@ -460,6 +468,10 @@ small {
 
   .full-column {
     grid-column: span 1;
+  }
+
+  .financial-analysis-grid {
+    grid-template-columns: 1fr;
   }
 
   .cost-item {

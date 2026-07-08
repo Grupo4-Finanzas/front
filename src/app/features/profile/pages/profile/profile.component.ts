@@ -70,6 +70,11 @@ export class ProfileComponent implements OnInit {
       return;
     }
 
+    if (shouldChangePassword && newPassword.length < 8) {
+      this.errorMessage = 'La nueva contrasena debe tener como minimo 8 caracteres.';
+      return;
+    }
+
     if (shouldChangePassword && newPassword !== confirmPassword) {
       this.errorMessage = 'La nueva contrasena y la confirmacion no coinciden.';
       return;

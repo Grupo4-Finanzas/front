@@ -30,6 +30,10 @@ export class HelpCenterComponent {
   searchTerm = '';
   selectedCategory: FaqCategory = 'Uso del sistema';
 
+  get isAuthenticated(): boolean {
+    return this.authService.isAuthenticated();
+  }
+
   readonly categories: FaqCategory[] = [
     'Uso del sistema',
     'Compra Inteligente',

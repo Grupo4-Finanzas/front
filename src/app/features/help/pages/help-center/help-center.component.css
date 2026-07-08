@@ -287,3 +287,73 @@
     color: #4f46e5;
   }
 }
+
+.public-help-header {
+  width: min(960px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 28px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.public-help-header .brand-link {
+  color: #4f46e5;
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+}
+
+.public-help-header nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.public-help-header nav a {
+  border: 1px solid #c7c4d7;
+  border-radius: 8px;
+  color: #464554;
+  background: #ffffff;
+  padding: 8px 12px;
+  text-decoration: none;
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.public-help-header nav a:hover,
+.public-help-header nav a.active {
+  border-color: #4f46e5;
+  color: #4f46e5;
+}
+
+.help-page.public-help-page {
+  width: min(960px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 28px 0 56px;
+}
+
+@media (max-width: 800px) {
+  .public-help-header {
+    width: calc(100% - 32px);
+    align-items: flex-start;
+    flex-direction: column;
+    padding-top: 24px;
+  }
+
+  .public-help-header nav {
+    justify-content: flex-start;
+  }
+
+  .help-page.public-help-page {
+    width: calc(100% - 32px);
+    padding: 24px 0 40px;
+  }
+}

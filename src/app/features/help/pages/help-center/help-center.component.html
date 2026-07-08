@@ -1,43 +1,54 @@
-<aside class="sidebar">
-  <div class="sidebar-brand">
-    <h1>CrediAuto</h1>
-    <p>Simulador de Credito</p>
-  </div>
+@if (isAuthenticated) {
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <h1>CrediAuto</h1>
+      <p>Simulador de Credito</p>
+    </div>
 
-  <nav class="sidebar-nav">
-    <a routerLink="/dashboard">
-      <span class="material-symbols-outlined">dashboard</span>
-      Dashboard
-    </a>
+    <nav class="sidebar-nav">
+      <a routerLink="/dashboard">
+        <span class="material-symbols-outlined">dashboard</span>
+        Dashboard
+      </a>
 
-    <a routerLink="/simulation">
-      <span class="material-symbols-outlined">calculate</span>
-      Simulacion
-    </a>
+      <a routerLink="/simulation">
+        <span class="material-symbols-outlined">calculate</span>
+        Simulacion
+      </a>
 
-    <a routerLink="/history">
-      <span class="material-symbols-outlined">history</span>
-      Historial
-    </a>
+      <a routerLink="/history">
+        <span class="material-symbols-outlined">history</span>
+        Historial
+      </a>
 
-    <a routerLink="/profile">
-      <span class="material-symbols-outlined">person</span>
-      Perfil
-    </a>
+      <a routerLink="/profile">
+        <span class="material-symbols-outlined">person</span>
+        Perfil
+      </a>
 
-    <a class="active" routerLink="/help">
-      <span class="material-symbols-outlined">help</span>
-      Ayuda
-    </a>
+      <a class="active" routerLink="/help">
+        <span class="material-symbols-outlined">help</span>
+        Ayuda
+      </a>
 
-    <button type="button" class="logout-button" (click)="logout()">
-      <span class="material-symbols-outlined">logout</span>
-      Cerrar sesion
-    </button>
-  </nav>
-</aside>
+      <button type="button" class="logout-button" (click)="logout()">
+        <span class="material-symbols-outlined">logout</span>
+        Cerrar sesion
+      </button>
+    </nav>
+  </aside>
+} @else {
+  <header class="public-help-header">
+    <a class="brand-link" routerLink="/auth">CrediAuto</a>
+    <nav aria-label="Enlaces publicos">
+      <a class="active" routerLink="/help">Centro de ayuda</a>
+      <a routerLink="/terms">Terminos</a>
+      <a routerLink="/privacy">Privacidad</a>
+    </nav>
+  </header>
+}
 
-<main class="help-page">
+<main class="help-page" [class.public-help-page]="!isAuthenticated">
   <section class="help-content" aria-labelledby="help-title">
     <div class="help-heading">
       <h1 id="help-title">Centro de Ayuda</h1>
@@ -102,29 +113,31 @@
   </section>
 </main>
 
-<nav class="mobile-nav" aria-label="Navegacion movil">
-  <a routerLink="/dashboard">
-    <span class="material-symbols-outlined">dashboard</span>
-    <span>Inicio</span>
-  </a>
+@if (isAuthenticated) {
+  <nav class="mobile-nav" aria-label="Navegacion movil">
+    <a routerLink="/dashboard">
+      <span class="material-symbols-outlined">dashboard</span>
+      <span>Inicio</span>
+    </a>
 
-  <a routerLink="/simulation">
-    <span class="material-symbols-outlined">calculate</span>
-    <span>Simular</span>
-  </a>
+    <a routerLink="/simulation">
+      <span class="material-symbols-outlined">calculate</span>
+      <span>Simular</span>
+    </a>
 
-  <a routerLink="/history">
-    <span class="material-symbols-outlined">history</span>
-    <span>Historial</span>
-  </a>
+    <a routerLink="/history">
+      <span class="material-symbols-outlined">history</span>
+      <span>Historial</span>
+    </a>
 
-  <a routerLink="/profile">
-    <span class="material-symbols-outlined">person</span>
-    <span>Perfil</span>
-  </a>
+    <a routerLink="/profile">
+      <span class="material-symbols-outlined">person</span>
+      <span>Perfil</span>
+    </a>
 
-  <a class="active" routerLink="/help">
-    <span class="material-symbols-outlined">help</span>
-    <span>Ayuda</span>
-  </a>
-</nav>
+    <a class="active" routerLink="/help">
+      <span class="material-symbols-outlined">help</span>
+      <span>Ayuda</span>
+    </a>
+  </nav>
+}
